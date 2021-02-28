@@ -8,6 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @Data
+@ToString
 public class RpcResponse {
     private String message;
 }
