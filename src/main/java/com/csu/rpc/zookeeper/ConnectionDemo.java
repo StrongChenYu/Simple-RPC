@@ -1,8 +1,6 @@
 package com.csu.rpc.zookeeper;
 
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -25,10 +23,13 @@ public class ConnectionDemo {
             countDownLatch.await();
             //CONNECTED
             System.out.println(zooKeeper.getState());
+            zooKeeper.create("/runoob","0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (KeeperException e) {
             e.printStackTrace();
         }
     }
