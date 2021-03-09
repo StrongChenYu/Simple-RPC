@@ -1,6 +1,6 @@
 package com.csu.rpc.client.handler;
 
-import com.csu.rpc.serializer.response.RpcResponse;
+import com.csu.rpc.dto.response.RpcResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.AttributeKey;

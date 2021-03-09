@@ -2,7 +2,7 @@ package com.csu.rpc;
 
 import com.csu.rpc.serializer.Exception.SerializeException;
 import com.csu.rpc.serializer.KryoSerializer;
-import com.csu.rpc.serializer.request.RpcRequest;
+import com.csu.rpc.dto.request.RpcRequest;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,8 +1,8 @@
 package com.csu.rpc.coder;
 
 import com.csu.rpc.serializer.KryoSerializer;
-import com.csu.rpc.serializer.request.RpcRequest;
-import com.csu.rpc.serializer.response.RpcResponse;
+import com.csu.rpc.dto.request.RpcRequest;
+import com.csu.rpc.dto.response.RpcResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;

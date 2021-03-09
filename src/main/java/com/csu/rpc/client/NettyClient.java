@@ -3,10 +3,8 @@ package com.csu.rpc.client;
 import com.csu.rpc.client.handler.NettyClientHandler;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
-import com.csu.rpc.serializer.KryoSerializer;
-import com.csu.rpc.serializer.Serializer;
-import com.csu.rpc.serializer.request.RpcRequest;
-import com.csu.rpc.serializer.response.RpcResponse;
+import com.csu.rpc.dto.request.RpcRequest;
+import com.csu.rpc.dto.response.RpcResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -18,9 +16,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.AttributeKey;
-
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class NettyClient {
 

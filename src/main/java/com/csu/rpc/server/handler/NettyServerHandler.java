@@ -1,7 +1,8 @@
 package com.csu.rpc.server.handler;
 
-import com.csu.rpc.serializer.request.RpcRequest;
-import com.csu.rpc.serializer.response.RpcResponse;
+import com.csu.rpc.dto.request.RpcRequest;
+import com.csu.rpc.dto.response.RpcResponse;
+
 import io.netty.channel.*;
 
 public class NettyServerHandler extends ChannelInboundHandlerAdapter {

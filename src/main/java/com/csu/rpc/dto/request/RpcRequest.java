@@ -1,4 +1,4 @@
-package com.csu.rpc.serializer.request;
+package com.csu.rpc.dto.request;
 
 import lombok.*;
 

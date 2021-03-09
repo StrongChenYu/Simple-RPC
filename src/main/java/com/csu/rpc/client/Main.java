@@ -1,7 +1,7 @@
 package com.csu.rpc.client;
 
-import com.csu.rpc.serializer.request.RpcRequest;
-import com.csu.rpc.serializer.response.RpcResponse;
+import com.csu.rpc.dto.request.RpcRequest;
+import com.csu.rpc.dto.response.RpcResponse;
 
 public class Main {
     public static void main(String[] args) {

@@ -1,8 +1,9 @@
 package com.csu.rpc.serializer;
 
+import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.serializer.Exception.SerializeException;
-import com.csu.rpc.serializer.request.RpcRequest;
-import com.csu.rpc.serializer.response.RpcResponse;
+
+import com.csu.rpc.dto.response.RpcResponse;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
