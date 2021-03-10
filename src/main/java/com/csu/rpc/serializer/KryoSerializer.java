@@ -1,7 +1,6 @@
 package com.csu.rpc.serializer;
 
 import com.csu.rpc.dto.request.RpcRequest;
-import com.csu.rpc.serializer.Exception.SerializeException;
 
 import com.csu.rpc.dto.response.RpcResponse;
 import com.esotericsoftware.kryo.Kryo;
@@ -33,8 +32,8 @@ public class KryoSerializer implements Serializer {
             return output.toBytes();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new SerializeException("反序列化失败");
         }
+        return null;
     }
 
     @Override
@@ -49,8 +48,8 @@ public class KryoSerializer implements Serializer {
             return clazz.cast(object);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new SerializeException("反序列化失败");
         }
+        return null;
     }
 
 //    public static void main(String[] args) {
