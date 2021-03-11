@@ -1,6 +1,11 @@
 package com.csu.rpc.dto.protocol;
 
 
+import com.csu.rpc.dto.Packet;
+import com.csu.rpc.dto.compress.Compress;
+import com.csu.rpc.serializer.Serializer;
+import com.csu.rpc.utils.ConstantUtils;
+import com.csu.rpc.utils.RpcConstants;
 import io.netty.buffer.ByteBuf;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ProtocolStruct {
+
     /**
      * 魔数，用来标识是否属于协议
      */
@@ -53,7 +59,7 @@ public class ProtocolStruct {
      */
     private byte[] body;
 
-    public static ProtocolStruct decode(ByteBuf byteBuf) {
+    public static ProtocolStruct transformToProtocol(ByteBuf byteBuf) {
         ProtocolStruct protocolStruct = new ProtocolStruct();
 
         //读取魔数
@@ -84,6 +90,34 @@ public class ProtocolStruct {
         byte[] body = new byte[length];
         byteBuf.readBytes(body);
         protocolStruct.setBody(body);
+
+        return protocolStruct;
+    }
+
+    public static ProtocolStruct transformToProtocol(Packet packet) {
+        ProtocolStruct protocolStruct = new ProtocolStruct();
+
+        protocolStruct.setMagicNumbers(RpcConstants.MAGIC_NUMBER);
+        protocolStruct.setVersion(RpcConstants.VERSION);
+
+        byte messageType = packet.getMessageType();
+        byte compressType = packet.getCompressType();
+        byte serializeType = packet.getSerializerType();
+
+
+        Serializer serializeAlgorithm = ConstantUtils.getSerializeAlgorithm(serializeType);
+        Compress compress = ConstantUtils.getCompressType(compressType);
+
+        byte[] compressBytes = compress.compress(serializeAlgorithm.serialize(packet));
+
+        protocolStruct.setLength(compressBytes.length);
+        protocolStruct.setMessageType(messageType);
+        protocolStruct.setCompressType(compressType);
+        protocolStruct.setSerializeType(serializeType);
+        protocolStruct.setRequestId(packet.getRequestId());
+        protocolStruct.setBody(compressBytes);
+
+
 
         return protocolStruct;
     }

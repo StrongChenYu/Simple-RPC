@@ -1,5 +1,6 @@
 package com.csu.rpc.serializer;
 
+import com.csu.rpc.dto.TestPacket;
 import com.csu.rpc.dto.request.RpcRequest;
 
 import com.csu.rpc.dto.response.RpcResponse;
@@ -18,6 +19,7 @@ public class KryoSerializer implements Serializer {
         Kryo kryo = new Kryo();
         kryo.register(RpcRequest.class);
         kryo.register(RpcResponse.class);
+        kryo.register(TestPacket.class);
         return kryo;
     });
 
