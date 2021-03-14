@@ -1,15 +1,13 @@
-package com.csu.rpc.serializer;
+package com.csu.rpc.dto.serializer;
 
-import com.csu.rpc.dto.TestPacket;
-import com.csu.rpc.dto.request.RpcRequest;
-
-import com.csu.rpc.dto.response.RpcResponse;
+import com.csu.rpc.dto.PacketCodeC;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 public class KryoSerializer implements Serializer {
 
@@ -17,9 +15,10 @@ public class KryoSerializer implements Serializer {
 
     private final ThreadLocal<Kryo> kryoThreadLocal = ThreadLocal.withInitial(() -> {
         Kryo kryo = new Kryo();
-        kryo.register(RpcRequest.class);
-        kryo.register(RpcResponse.class);
-        kryo.register(TestPacket.class);
+        List<Class<?>> allClasses = PacketCodeC.getAllClasses();
+        for (Class<?> clazz : allClasses) {
+            kryo.register(clazz);
+        }
         return kryo;
     });
 

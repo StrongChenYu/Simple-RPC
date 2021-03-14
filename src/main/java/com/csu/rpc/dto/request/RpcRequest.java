@@ -1,5 +1,7 @@
 package com.csu.rpc.dto.request;
 
+import com.csu.rpc.dto.Command;
+import com.csu.rpc.dto.Packet;
 import lombok.*;
 
 import java.util.Objects;
@@ -11,7 +13,7 @@ import java.util.Objects;
 @Setter
 @Data
 @ToString
-public class RpcRequest {
+public class RpcRequest extends Packet {
     private String interfaceName;
     private String methodName;
 
@@ -26,5 +28,10 @@ public class RpcRequest {
     @Override
     public int hashCode() {
         return Objects.hash(interfaceName, methodName);
+    }
+
+    @Override
+    public Byte serializerType() {
+        return Command.RPC_REQUEST_PACKET;
     }
 }

@@ -2,20 +2,13 @@ package com.csu.rpc.protocol;
 
 import com.csu.rpc.dto.Packet;
 import com.csu.rpc.dto.PacketCodeC;
-import com.csu.rpc.dto.TestPacket;
-import com.csu.rpc.utils.ConstantUtils;
+import com.csu.rpc.dto.request.RpcRequest;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class PacketCodeCTest {
-
-    @Before
-    public void before() {
-        ConstantUtils.setClass((byte)1, TestPacket.class);
-    }
 
     @Test
     public void Test() {
@@ -23,21 +16,19 @@ public class PacketCodeCTest {
         /**
          * 主要比较code后在decode出来能不能得到一样的包
          */
-
-        TestPacket packet = new TestPacket();
-        packet.setId("chenyu");
+        RpcRequest packet = new RpcRequest();
+        packet.setInterfaceName("interface");
+        packet.setMethodName("method");
         PacketCodeC packetCodeC = new PacketCodeC();
 
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
 
         packetCodeC.encode(byteBuf, packet);
-
         Packet decode = packetCodeC.decode(byteBuf);
 
-        Assert.assertTrue(decode instanceof TestPacket);
+        Assert.assertTrue(decode instanceof RpcRequest);
 
-        TestPacket testPacket = (TestPacket) decode;
+        RpcRequest testPacket = (RpcRequest) decode;
         Assert.assertEquals(testPacket, packet);
     }
-
 }

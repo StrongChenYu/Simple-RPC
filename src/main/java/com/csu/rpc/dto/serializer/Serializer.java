@@ -1,4 +1,4 @@
-package com.csu.rpc.serializer;
+package com.csu.rpc.dto.serializer;
 
 
 public interface Serializer {
