@@ -14,6 +14,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
+import java.util.Date;
+
 public class NettyServer {
 
     public static void main(String[] args) throws InterruptedException {
@@ -37,9 +39,19 @@ public class NettyServer {
                     }
                 });
 
-        ChannelFuture sync = bootstrap.bind(8080).sync();
+        bind(bootstrap, 8080);
+    }
 
-        sync.channel().closeFuture().sync();
+    private static void bind(final ServerBootstrap serverBootstrap, final int port) throws InterruptedException {
+//        serverBootstrap.bind(port).addListener(future -> {
+//            if (future.isSuccess()) {
+//                System.out.println(new Date() + "端口[" + port + "]绑定成功!");
+//            } else {
+//                System.err.println(new Date() + "端口[" + port + "]绑定失败!");
+//            }
+//        });
+        serverBootstrap.bind(port).sync();
+        System.out.println("绑定端口失败！");
     }
 
 }
