@@ -3,15 +3,13 @@ package com.csu.rpc.client.handler;
 import com.csu.rpc.dto.response.RpcResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
 
-public class NettyClientHandler extends ChannelInboundHandlerAdapter {
-
+public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        RpcResponse response = (RpcResponse) msg;
-        System.out.println(msg);
-        AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse");
+    protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
+        AttributeKey<RpcResponse> key = AttributeKey.valueOf("RpcResponse");
         ctx.channel().attr(key).set(response);
     }
 }

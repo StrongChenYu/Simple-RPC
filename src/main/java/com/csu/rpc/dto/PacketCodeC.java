@@ -18,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PacketCodeC {
 
+    public static PacketCodeC PACKETCODEC = new PacketCodeC();
+
     private static final Map<Byte, Class<? extends Packet>> packetTypeMap;
     private static final Map<Byte, Serializer> serializerMap;
     private static final Map<Byte, Compress> compressAlgorithmMap;

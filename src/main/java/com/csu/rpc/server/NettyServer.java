@@ -3,6 +3,7 @@ package com.csu.rpc.server;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
 import com.csu.rpc.server.handler.NettyServerHandler;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -18,12 +19,14 @@ import java.util.Date;
 
 public class NettyServer {
 
-    public static void main(String[] args) throws InterruptedException {
+    private final ServerBootstrap bootstrap = new ServerBootstrap();
+    private final int port;
+
+    public NettyServer(int port) {
+        this.port = port;
+
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-
-        ServerBootstrap bootstrap = new ServerBootstrap();
-
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.TCP_NODELAY, true)
@@ -38,20 +41,53 @@ public class NettyServer {
                         ch.pipeline().addLast(new NettyServerHandler());
                     }
                 });
-
-        bind(bootstrap, 8080);
     }
 
-    private static void bind(final ServerBootstrap serverBootstrap, final int port) throws InterruptedException {
-//        serverBootstrap.bind(port).addListener(future -> {
+
+    public void start(){
+        try {
+            ChannelFuture f = bootstrap.bind(port).sync();
+
+            f.addListener(future -> {
+                if (future.isSuccess()) {
+                    System.out.println(new Date() + "端口[" + port + "]绑定成功!");
+                } else {
+                    System.err.println(new Date() + "端口[" + port + "]绑定失败!");
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        NettyServer nettyServer = new NettyServer(8080);
+        nettyServer.start();
+    }
+
+//    private void bind() {
+//        try {
+//            ChannelFuture sync = bootstrap.bind(port).sync();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//    private void bind(){
+//        ChannelFuture channelFuture = bootstrap.bind(port).addListener(future -> {
 //            if (future.isSuccess()) {
 //                System.out.println(new Date() + "端口[" + port + "]绑定成功!");
 //            } else {
 //                System.err.println(new Date() + "端口[" + port + "]绑定失败!");
 //            }
 //        });
-        serverBootstrap.bind(port).sync();
-        System.out.println("绑定端口失败！");
-    }
+//
+//        try {
+//            //给老子等着
+//            channelFuture.sync();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

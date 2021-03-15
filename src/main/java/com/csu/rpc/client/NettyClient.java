@@ -23,7 +23,6 @@ public class NettyClient {
     private final int port;
     private static final Bootstrap bootstrap;
 
-    private static final int MAX_RETRY = 5;
 
     public NettyClient(String host, int port) {
         this.host = host;
@@ -66,6 +65,7 @@ public class NettyClient {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 }
