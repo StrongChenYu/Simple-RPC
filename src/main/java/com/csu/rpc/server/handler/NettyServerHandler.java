@@ -7,7 +7,6 @@ import io.netty.channel.*;
 
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) throws Exception {
         System.out.println("服务端收到消息：" + msg.toString());

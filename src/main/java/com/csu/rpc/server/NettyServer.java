@@ -16,6 +16,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 
 public class NettyServer {
 
@@ -43,6 +44,27 @@ public class NettyServer {
                 });
     }
 
+    /**
+     * just for test
+     * @param countDownLatch
+     */
+    public void start(CountDownLatch countDownLatch) {
+        try {
+            ChannelFuture f = bootstrap.bind(port).sync();
+            f.addListener(future -> {
+                if (future.isSuccess()) {
+                    Thread.sleep(1000);
+                    System.out.println(new Date() + "端口[" + port + "]绑定成功!");
+                    countDownLatch.countDown();
+                } else {
+                    System.err.println(new Date() + "端口[" + port + "]绑定失败!");
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void start(){
         try {
