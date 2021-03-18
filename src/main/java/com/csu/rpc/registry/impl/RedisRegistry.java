@@ -1,4 +1,4 @@
-package com.csu.rpc.registry;
+package com.csu.rpc.registry.impl;
 
 /**
  * @Author Chen Yu

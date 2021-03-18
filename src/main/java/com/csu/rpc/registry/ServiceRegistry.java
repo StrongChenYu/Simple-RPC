@@ -10,5 +10,17 @@ import java.net.InetSocketAddress;
  */
 public interface ServiceRegistry {
 
+    /**
+     * 注册服务
+     * @param rpcServiceName
+     * @param inetSocketAddress
+     */
     void registerService(String rpcServiceName, InetSocketAddress inetSocketAddress);
+
+    /**
+     * 取消注册服务
+     * @param rpcServiceName
+     * @param inetSocketAddress
+     */
+    void unRegisterService(String rpcServiceName, InetSocketAddress inetSocketAddress);
 }
