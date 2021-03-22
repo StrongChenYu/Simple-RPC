@@ -5,6 +5,8 @@ import com.csu.rpc.registry.ServiceRegistry;
 import com.csu.rpc.utils.SingletonFactory;
 
 import java.net.InetSocketAddress;
+
+
 /**
  * zookeeper注册中心API
  *
@@ -13,8 +15,8 @@ import java.net.InetSocketAddress;
  */
 public class ZookeeperRegistry implements ServiceRegistry {
 
-    private static final String ZOOKEEPER_ADDRESS = "127.0.0.1:2181";
-    private static final String SPLIT_SYMBOL = ";";
+    public static final String ZOOKEEPER_ADDRESS = "127.0.0.1:2181";
+    private static final String SERVICE_PREFIX = "/rpc/";
 
     @Override
     public void registerService(String rpcServiceName, InetSocketAddress inetSocketAddress) {
@@ -22,20 +24,16 @@ public class ZookeeperRegistry implements ServiceRegistry {
 
         /**
          * 格式
-         * name:ip;ip;ip....
+         * name/ip1
+         * name/ip2
+         * name/ip3
          *
          * 这里如果不存在就创建一个新的节点
+         * 因为是用IP分割的，所以需要判断一下列表里面是否已经存在了
          * 如果存在就在原有的内容后面加一个节点
          */
-        String value = zkUtil.getValue(ZOOKEEPER_ADDRESS, rpcServiceName);
-        if (value == null) {
-            zkUtil.createPersistentNode(ZOOKEEPER_ADDRESS, rpcServiceName, inetSocketAddress.toString());
-        } else {
-            StringBuffer sb = new StringBuffer(value);
-            sb.append(";");
-            sb.append(rpcServiceName);
-            zkUtil.updateNode(ZOOKEEPER_ADDRESS, rpcServiceName ,sb.toString());
-        }
+        String register = SERVICE_PREFIX + rpcServiceName + inetSocketAddress.toString();
+        zkUtil.createPersistentNode(ZOOKEEPER_ADDRESS, register, null);
     }
 
     @Override
@@ -46,19 +44,7 @@ public class ZookeeperRegistry implements ServiceRegistry {
          * 删除节点，如果不存在就不用删除
          * 如果存在就删除掉
          */
-        String value = zkUtil.getValue(ZOOKEEPER_ADDRESS, rpcServiceName);
-        if (value == null) {
-            return;
-        }
-
-        String[] split = value.split(SPLIT_SYMBOL);
-        StringBuffer res = new StringBuffer();
-        for (int i = 0; i < split.length; i++) {
-            if (!split[i].equals(inetSocketAddress.toString())) {
-                res.append(split[i]);
-                res.append(";");
-            }
-        }
-        zkUtil.updateNode(ZOOKEEPER_ADDRESS, rpcServiceName, res.toString());
+        String register = SERVICE_PREFIX + rpcServiceName + inetSocketAddress.toString();
+        zkUtil.deleteNode(ZOOKEEPER_ADDRESS, register);
     }
 }

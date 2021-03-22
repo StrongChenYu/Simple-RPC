@@ -24,12 +24,13 @@ public class SingletonFactory {
                     //使用instance的无参构造器，然后用这个构造器构造一个实例
                     instance = clazz.getDeclaredConstructor().newInstance();
                     OBJECT_MAP.put(key, instance);
+
                 } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                     throw new RuntimeException(e.getMessage(), e);
                 }
             }
         }
-        return null;
+        return clazz.cast(instance);
     }
 
     public static void main(String[] args) throws NoSuchMethodException {

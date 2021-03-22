@@ -8,6 +8,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,7 +42,6 @@ public class ZookeeperUtil {
         }
         return zkClient;
     }
-
     /**
      * 增加操作
      * zookeeper操作的api，不涉及任何操作
@@ -114,6 +114,25 @@ public class ZookeeperUtil {
                 //节点存在
                 byte[] bytes = client.getData().forPath(path);
                 return new String(bytes, StandardCharsets.UTF_8);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取路径下所有的子路径
+     * @param address
+     * @param path
+     * @return
+     */
+    public List<String> getChildren(String address, String path) {
+        try (CuratorFramework client = getZkClient(address)){
+            if (client.checkExists().forPath(path) != null) {
+                //节点存在
+                List<String> strings = client.getChildren().forPath(path);
+                return strings;
             }
         } catch (Exception e) {
             e.printStackTrace();
