@@ -14,7 +14,7 @@ public class ClientTest {
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
         Thread server = new Thread(() -> {
-            NettyServer nettyServer = new NettyServer(8080);
+            NettyServer nettyServer = new NettyServer(8000);
             nettyServer.start(countDownLatch);
         });
 
@@ -32,16 +32,22 @@ public class ClientTest {
 
         countDownLatch.await();
 
-        Thread.sleep(10000);
+        Thread.sleep(1000);
     }
 
     @Test
     public void sendMessageTest() throws InterruptedException {
-        NettyClient client = new NettyClient("127.0.0.1", 8080);
-        RpcRequest rpcRequest = new RpcRequest();
-        rpcRequest.setInterfaceName("interface");
-        rpcRequest.setMethodName("method");
+        NettyClient client = new NettyClient("127.0.0.1", 8000);
+        RpcRequest rpcRequest = RpcRequest.builder()
+                .serviceName("HelloService")
+                .interfaceName("HelloService")
+                .methodName("sayHello")
+                .args(null)
+                .argTypes(null).build();
+
+
         RpcResponse rpcResponse = client.sendMessage(rpcRequest);
+
         System.out.println(rpcResponse);
     }
 

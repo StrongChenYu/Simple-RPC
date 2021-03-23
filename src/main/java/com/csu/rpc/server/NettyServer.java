@@ -3,7 +3,12 @@ package com.csu.rpc.server;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
 import com.csu.rpc.server.handler.NettyServerHandler;
-import io.netty.bootstrap.Bootstrap;
+import com.csu.rpc.server.handler.RpcRequestPacketHandler;
+import com.csu.rpc.server.process.ServerProvider;
+import com.csu.rpc.server.process.processImpl.ServerProviderImpl;
+import com.csu.rpc.service.HelloService;
+import com.csu.rpc.service.HelloServiceImpl;
+import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -22,6 +27,7 @@ public class NettyServer {
 
     private final ServerBootstrap bootstrap = new ServerBootstrap();
     private final int port;
+    private final ServerProvider serverProvider = SingletonFactory.getInstance(ServerProviderImpl.class);
 
     public NettyServer(int port) {
         this.port = port;
@@ -38,14 +44,17 @@ public class NettyServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new NettyKryoDecoder());
+                        ch.pipeline().addLast(new RpcRequestPacketHandler());
                         ch.pipeline().addLast(new NettyKryoEncoder());
-                        ch.pipeline().addLast(new NettyServerHandler());
                     }
                 });
     }
 
     /**
      * just for test
+     *
+     * test最后会强制关闭jvm
+     * 所以需要使用CountDownLatch等待服务器关闭
      * @param countDownLatch
      */
     public void start(CountDownLatch countDownLatch) {
@@ -55,6 +64,7 @@ public class NettyServer {
                 if (future.isSuccess()) {
                     Thread.sleep(1000);
                     System.out.println(new Date() + "端口[" + port + "]绑定成功!");
+                    scanAddService();
                     countDownLatch.countDown();
                 } else {
                     System.err.println(new Date() + "端口[" + port + "]绑定失败!");
@@ -73,6 +83,10 @@ public class NettyServer {
             f.addListener(future -> {
                 if (future.isSuccess()) {
                     System.out.println(new Date() + "端口[" + port + "]绑定成功!");
+
+                    //这里扫描包并注册到providerService里面
+                    scanAddService();
+
                 } else {
                     System.err.println(new Date() + "端口[" + port + "]绑定失败!");
                 }
@@ -83,8 +97,24 @@ public class NettyServer {
         }
     }
 
+    /**
+     * 这个类主要负责
+     * 将这个服务器里面所有提供服务的类注册进来
+     */
+    private void scanAddService() {
+        /**
+         * ???????
+         * 这里只传一个class可以调用吗???????
+         */
+        serverProvider.publishServer(new HelloServiceImpl(), HelloService.class);
+    }
+
+    /**
+     * 服务类的启动函数
+     * @param args
+     */
     public static void main(String[] args) {
-        NettyServer nettyServer = new NettyServer(8080);
+        NettyServer nettyServer = new NettyServer(8000);
         nettyServer.start();
     }
 

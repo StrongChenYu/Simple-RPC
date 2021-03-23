@@ -40,8 +40,8 @@ public class NettyClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new NettyKryoDecoder());
-                        ch.pipeline().addLast(new NettyKryoEncoder());
                         ch.pipeline().addLast(new NettyClientHandler());
+                        ch.pipeline().addLast(new NettyKryoEncoder());
                     }
                 });
     }
@@ -60,7 +60,7 @@ public class NettyClient {
             }
 
             futureChannel.closeFuture().sync();
-            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse");
+            AttributeKey<RpcResponse> key = AttributeKey.valueOf("RpcResponse");
             return futureChannel.attr(key).get();
         } catch (InterruptedException e) {
             e.printStackTrace();

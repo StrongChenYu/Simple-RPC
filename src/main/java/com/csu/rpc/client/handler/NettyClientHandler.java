@@ -9,6 +9,7 @@ import io.netty.util.AttributeKey;
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
+        System.out.println("收到服务端发来的消息");
         AttributeKey<RpcResponse> key = AttributeKey.valueOf("RpcResponse");
         ctx.channel().attr(key).set(response);
     }

@@ -26,7 +26,7 @@ public class registryTest {
 
     @Test
     public void getAllService() {
-        List<String> children = zookeeperUtil.getChildren(ZookeeperRegistry.ZOOKEEPER_ADDRESS, "/rpc/testService");
+        List<String> children = zookeeperUtil.getChildren(ZookeeperRegistry.ZOOKEEPER_ADDRESS, "/rpc/HelloService");
 
         for (String s : children) {
             System.out.println(s);

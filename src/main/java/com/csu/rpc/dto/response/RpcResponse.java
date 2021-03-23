@@ -12,7 +12,7 @@ import lombok.*;
 @Data
 @ToString
 public class RpcResponse extends Packet {
-    private String message;
+    private Object message;
 
     @Override
     public Byte serializerType() {

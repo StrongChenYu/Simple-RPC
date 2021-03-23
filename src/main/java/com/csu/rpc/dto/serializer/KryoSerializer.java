@@ -19,6 +19,7 @@ public class KryoSerializer implements Serializer {
         for (Class<?> clazz : allClasses) {
             kryo.register(clazz);
         }
+        kryo.register(Class[].class);
         return kryo;
     });
 
