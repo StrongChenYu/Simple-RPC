@@ -47,7 +47,6 @@ public class ClientTest {
 
 
         RpcResponse rpcResponse = client.sendMessage(rpcRequest);
-
         System.out.println(rpcResponse);
     }
 

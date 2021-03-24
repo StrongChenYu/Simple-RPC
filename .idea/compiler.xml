@@ -7,7 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Simple-RPC" />
-        <module name="java-rpc" />
+        <module name="rpc-framework-server" />
+        <module name="rpc-framework-client" />
+        <module name="rpc-framework-common" />
+        <module name="service-api" />
       </profile>
     </annotationProcessing>
   </component>

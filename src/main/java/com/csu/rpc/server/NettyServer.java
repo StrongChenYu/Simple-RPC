@@ -2,6 +2,7 @@ package com.csu.rpc.server;
 
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
+import com.csu.rpc.server.handler.LoggerHandler;
 import com.csu.rpc.server.handler.NettyServerHandler;
 import com.csu.rpc.server.handler.RpcRequestPacketHandler;
 import com.csu.rpc.server.process.ServerProvider;
@@ -114,6 +115,8 @@ public class NettyServer {
      * @param args
      */
     public static void main(String[] args) {
+//        RpcRequestPacketHandler rpcRequestPacketHandler = new RpcRequestPacketHandler();
+//        System.out.println(rpcRequestPacketHandler);
         NettyServer nettyServer = new NettyServer(8000);
         nettyServer.start();
     }

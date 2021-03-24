@@ -12,7 +12,15 @@ import java.lang.reflect.Method;
  */
 public class InvokeHandlerImpl implements InvokeHandler {
 
-    private final InvokeHandler invokeHandler = SingletonFactory.getInstance(InvokeHandlerImpl.class);
+    /**
+     * 这里为什么会报循环错误？
+     *
+     * 因为SingletonFactory.getInstance会创建一个新对象
+     * 但是新对象创建之时又会调用
+     * SingletonFactory.getInstance
+     * 循环调用
+     */
+    //private final InvokeHandler invokeHandler = SingletonFactory.getInstance(InvokeHandlerImpl.class);
 
     @Override
     public Object invokeMethod(Object service, String methodName, Object[] args, Class<?>[] argTypes) {

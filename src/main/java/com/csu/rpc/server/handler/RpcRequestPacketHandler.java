@@ -21,10 +21,8 @@ public class RpcRequestPacketHandler extends SimpleChannelInboundHandler<RpcRequ
         System.out.println("服务端收到消息：" + request.toString());
 
         Object res = requestHandler.handleRpcRequest(request);
-
         RpcResponse response = RpcResponse.builder().message(res).build();
-        ChannelFuture f = ctx.channel().writeAndFlush(response);
-        f.addListener(ChannelFutureListener.CLOSE);
+        ctx.channel().writeAndFlush(response);
     }
 
 }

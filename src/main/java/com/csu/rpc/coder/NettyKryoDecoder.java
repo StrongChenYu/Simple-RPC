@@ -11,6 +11,7 @@ import java.util.List;
 public class NettyKryoDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        System.out.println("将对象解码到out.....");
         Packet decode = PacketCodeC.PACKETCODEC.decode(in);
         out.add(decode);
     }

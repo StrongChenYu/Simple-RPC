@@ -59,7 +59,7 @@ public class NettyClient {
                 });
             }
 
-            futureChannel.closeFuture().sync();
+            //futureChannel.closeFuture().sync();
             AttributeKey<RpcResponse> key = AttributeKey.valueOf("RpcResponse");
             return futureChannel.attr(key).get();
         } catch (InterruptedException e) {
@@ -67,5 +67,18 @@ public class NettyClient {
         }
 
         return null;
+    }
+
+    public static void main(String[] args) {
+        NettyClient client = new NettyClient("127.0.0.1", 8000);
+        RpcRequest rpcRequest = RpcRequest.builder()
+                .serviceName("HelloService")
+                .interfaceName("HelloService")
+                .methodName("sayHello")
+                .args(null)
+                .argTypes(null).build();
+
+        RpcResponse rpcResponse = client.sendMessage(rpcRequest);
+        System.out.println(rpcResponse);
     }
 }

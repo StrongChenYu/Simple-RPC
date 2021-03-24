@@ -22,6 +22,7 @@ public class SingletonFactory {
             if (instance == null) {
                 try {
                     //使用instance的无参构造器，然后用这个构造器构造一个实例
+                    //System.out.println("创建对象：" + clazz.getName());
                     instance = clazz.getDeclaredConstructor().newInstance();
                     OBJECT_MAP.put(key, instance);
 

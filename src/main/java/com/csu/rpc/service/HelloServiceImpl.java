@@ -6,7 +6,7 @@ package com.csu.rpc.service;
  */
 public class HelloServiceImpl implements HelloService{
     @Override
-    public void sayHello() {
-        System.out.println("hello world!");
+    public String sayHello() {
+        return "hello world!";
     }
 }
