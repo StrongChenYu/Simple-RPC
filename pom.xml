@@ -12,7 +12,6 @@
         <module>rpc-framework-server</module>
         <module>rpc-framework-client</module>
         <module>rpc-framework-common</module>
-        <module>service-api</module>
     </modules>
 
     <properties>

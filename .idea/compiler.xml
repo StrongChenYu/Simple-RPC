@@ -10,8 +10,10 @@
         <module name="rpc-framework-server" />
         <module name="rpc-framework-client" />
         <module name="rpc-framework-common" />
-        <module name="service-api" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="service-api" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
