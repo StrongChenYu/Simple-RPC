@@ -4,17 +4,17 @@ import java.lang.reflect.Proxy;
 
 public class ProxyFactory {
 
-    public static Object getProxy(Object target) {
-        return Proxy.newProxyInstance(
-                target.getClass().getClassLoader(),
-                target.getClass().getInterfaces(),
-                new SmsProxy(target)
+    @SuppressWarnings("unchecked")
+    public static <T> T getProxy(Class<T> clazz) {
+        return (T) Proxy.newProxyInstance(
+                clazz.getClassLoader(),
+                clazz.getInterfaces(),
+                new SmsProxy()
         );
     }
 
     public static void main(String[] args) {
-        SmsService proxy = (SmsService) ProxyFactory.getProxy(new SmsServiceImpl());
-
+        SmsServiceImpl proxy = ProxyFactory.getProxy(SmsServiceImpl.class);
         proxy.send("陈宇");
     }
 }

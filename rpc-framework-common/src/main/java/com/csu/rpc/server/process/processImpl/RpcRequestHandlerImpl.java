@@ -18,6 +18,7 @@ public class RpcRequestHandlerImpl implements RpcRequestHandler {
     @Override
     public Object handleRpcRequest(RpcRequest request) {
         ServiceInfo serviceInfo = serverProvider.obtainService(request.getServiceName());
+        if (serviceInfo == null) System.out.println("2021.3.29 [没有找到服务不能调用]");
         Object res = invokeHandler.invokeMethod(serviceInfo.getServerImpl(),
                 request.getMethodName(),
                 request.getArgs(),
