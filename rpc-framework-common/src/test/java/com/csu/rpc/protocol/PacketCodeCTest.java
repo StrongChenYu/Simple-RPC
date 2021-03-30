@@ -17,7 +17,6 @@ public class PacketCodeCTest {
          * 主要比较code后在decode出来能不能得到一样的包
          */
         RpcRequest packet = new RpcRequest();
-        packet.setInterfaceName("interface");
         packet.setMethodName("method");
         PacketCodeC packetCodeC = new PacketCodeC();
 

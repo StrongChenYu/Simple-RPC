@@ -21,11 +21,6 @@ public class RpcRequest extends Packet {
     private String serviceName;
 
     /**
-     * 请求的接口的名字
-     */
-    private String interfaceName;
-
-    /**
      * 请求的接口中的方法名字
      */
     private String methodName;
@@ -41,17 +36,32 @@ public class RpcRequest extends Packet {
      */
     private Class<?>[] argTypes;
 
+    /**
+     * 版本控制
+     */
+    private String version;
+
+    /**
+     * 服务所属的组
+     */
+    private String group;
+
+    /**
+     * 请求的标号
+     */
+    private String requestId;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RpcRequest that = (RpcRequest) o;
-        return Objects.equals(interfaceName, that.interfaceName) && Objects.equals(methodName, that.methodName);
+        return Objects.equals(serviceName, that.serviceName) && Objects.equals(methodName, that.methodName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(interfaceName, methodName);
+        return Objects.hash(serviceName, methodName);
     }
 
     @Override

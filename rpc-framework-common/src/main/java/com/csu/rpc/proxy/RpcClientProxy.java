@@ -1,17 +1,27 @@
 package com.csu.rpc.proxy;
 
+import com.csu.rpc.bean.RemoteServiceProperties;
 import com.csu.rpc.client.NettyClient;
 import com.csu.rpc.dto.request.RpcRequest;
+import com.csu.rpc.dto.response.RpcResponse;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
 
 /**
  * @Author Chen Yu
  * @Date 2021/3/29 19:43
  */
 public class RpcClientProxy implements InvocationHandler {
+
+    private RemoteServiceProperties serviceProperties;
+
+    public RpcClientProxy(RemoteServiceProperties serviceProperties) {
+        this.serviceProperties = serviceProperties;
+    }
+
 
     /**
      * 返回代理类
@@ -29,19 +39,21 @@ public class RpcClientProxy implements InvocationHandler {
         NettyClient nettyClient = new NettyClient("127.0.0.1", 8000);
 
         String interfaceName = method.getDeclaringClass().getCanonicalName();
+
         RpcRequest rpcRequest = RpcRequest.builder()
                 .serviceName(interfaceName)
-                .interfaceName(interfaceName)
                 .methodName(method.getName())
-                .args(null)
-                .argTypes(null).build();
+                .requestId(UUID.randomUUID().toString())
+                .group(serviceProperties.getGroup())
+                .version(serviceProperties.getVersion())
+                .args(args)
+                .argTypes(method.getParameterTypes())
+                .build();
 
-        nettyClient.sendMessage(rpcRequest);
 
-        return null;
+        RpcResponse response = nettyClient.sendMessage(rpcRequest);
+
+        return response.getData();
     }
 
-    public static void main(String[] args) {
-        System.out.println(RpcClientProxy.class.getCanonicalName());
-    }
 }

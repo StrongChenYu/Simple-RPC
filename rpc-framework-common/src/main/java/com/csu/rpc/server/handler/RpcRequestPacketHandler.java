@@ -20,8 +20,7 @@ public class RpcRequestPacketHandler extends SimpleChannelInboundHandler<RpcRequ
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
         System.out.println("服务端收到消息：" + request.toString());
 
-        Object res = requestHandler.handleRpcRequest(request);
-        RpcResponse response = RpcResponse.builder().message(res).build();
+        RpcResponse response = requestHandler.handleRpcRequest(request);
         ctx.channel().writeAndFlush(response);
     }
 

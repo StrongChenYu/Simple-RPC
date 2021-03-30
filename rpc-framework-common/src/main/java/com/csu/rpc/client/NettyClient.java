@@ -73,7 +73,6 @@ public class NettyClient {
         NettyClient client = new NettyClient("127.0.0.1", 8000);
         RpcRequest rpcRequest = RpcRequest.builder()
                 .serviceName("HelloService")
-                .interfaceName("HelloService")
                 .methodName("sayHello")
                 .args(null)
                 .argTypes(null).build();
