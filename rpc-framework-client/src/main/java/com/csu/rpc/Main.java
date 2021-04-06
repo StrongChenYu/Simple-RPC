@@ -20,13 +20,13 @@ public class Main {
 //        HelloService helloService = proxy.getProxy(HelloService.class);
 //        helloService.sayHello();
 
-        Field[] declaredFields = HelloController.class.getDeclaredFields();
-        for (Field field : declaredFields) {
-            System.out.println(field.getName());
-        }
-
-        Field helloService = HelloController.class.getDeclaredField("helloService");
-        RpcTest annotation = helloService.getAnnotation(RpcTest.class);
-        System.out.println(annotation);
+//        Field[] declaredFields = HelloController.class.getDeclaredFields();
+//        for (Field field : declaredFields) {
+//            System.out.println(field.getName());
+//        }
+//
+//        Field helloService = HelloController.class.getDeclaredField("helloService");
+//        RpcTest annotation = helloService.getAnnotation(RpcTest.class);
+//        System.out.println(annotation);
     }
 }

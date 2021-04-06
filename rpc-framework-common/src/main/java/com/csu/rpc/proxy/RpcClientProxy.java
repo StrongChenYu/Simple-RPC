@@ -22,6 +22,9 @@ public class RpcClientProxy implements InvocationHandler {
         this.serviceProperties = serviceProperties;
     }
 
+    public RpcClientProxy() {
+        this.serviceProperties = new RemoteServiceProperties();
+    }
 
     /**
      * 返回代理类
