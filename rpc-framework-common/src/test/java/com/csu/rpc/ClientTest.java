@@ -38,7 +38,7 @@ public class ClientTest {
 
     @Test
     public void sendMessageTest() throws InterruptedException {
-        NettyClient client = new NettyClient("127.0.0.1", 8000);
+        NettyClient client = new NettyClient();
         RpcRequest rpcRequest = RpcRequest.builder()
                 .serviceName("HelloService")
                 .methodName("sayHello")

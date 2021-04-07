@@ -5,6 +5,9 @@ import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
+import com.csu.rpc.registry.ServerDiscovery;
+import com.csu.rpc.registry.impl.ZkServerDiscovery;
+import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -17,17 +20,16 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.AttributeKey;
 
+import java.net.InetSocketAddress;
+
 public class NettyClient {
 
-    private final String host;
-    private final int port;
+
     private static final Bootstrap bootstrap;
+    private ServerDiscovery serverDiscovery = SingletonFactory.getInstance(ZkServerDiscovery.class);
 
 
-    public NettyClient(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
+    public NettyClient() {}
 
     static {
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
@@ -47,8 +49,10 @@ public class NettyClient {
     }
 
     public RpcResponse sendMessage(RpcRequest rpcRequest) {
+        InetSocketAddress address = serverDiscovery.lookupServer(rpcRequest.getServiceName());
+
         try {
-            ChannelFuture sync = bootstrap.connect(host, port).sync();
+            ChannelFuture sync = bootstrap.connect(address.getHostName(), address.getPort()).sync();
             Channel futureChannel = sync.channel();
 
             if (futureChannel != null) {
@@ -69,15 +73,4 @@ public class NettyClient {
         return null;
     }
 
-    public static void main(String[] args) {
-        NettyClient client = new NettyClient("127.0.0.1", 8000);
-        RpcRequest rpcRequest = RpcRequest.builder()
-                .serviceName("HelloService")
-                .methodName("sayHello")
-                .args(null)
-                .argTypes(null).build();
-
-        RpcResponse rpcResponse = client.sendMessage(rpcRequest);
-        System.out.println(rpcResponse);
-    }
 }

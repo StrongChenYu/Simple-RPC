@@ -39,9 +39,9 @@ public class RpcClientProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        NettyClient nettyClient = new NettyClient("127.0.0.1", 8000);
+        NettyClient nettyClient = new NettyClient();
 
-        String interfaceName = method.getDeclaringClass().getCanonicalName();
+        String interfaceName = method.getDeclaringClass().getSimpleName();
 
         RpcRequest rpcRequest = RpcRequest.builder()
                 .serviceName(interfaceName)
