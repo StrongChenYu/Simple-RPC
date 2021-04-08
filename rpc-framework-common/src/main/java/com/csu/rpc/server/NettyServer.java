@@ -2,6 +2,7 @@ package com.csu.rpc.server;
 
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
+import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.server.handler.RpcRequestPacketHandler;
 import com.csu.rpc.server.process.ServerProvider;
 import com.csu.rpc.server.process.processImpl.ServerProviderImpl;
@@ -17,6 +18,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
+import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
@@ -24,7 +26,7 @@ public class NettyServer {
 
     private final ServerBootstrap bootstrap = new ServerBootstrap();
     private final int port;
-    private final ServerProvider serverProvider = SingletonFactory.getInstance(ServerProviderImpl.class);
+    private final ServerProvider serverProvider = ServerProvider.INSTANCE;
 
     public NettyServer(int port) {
         this.port = port;
@@ -102,7 +104,7 @@ public class NettyServer {
          * ???????
          * 这里只传一个class可以调用吗???????
          */
-        serverProvider.publishServer(serviceImpl, interFace);
+        serverProvider.publishServer(serviceImpl, interFace, port);
     }
 
     /**

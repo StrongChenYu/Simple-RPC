@@ -16,8 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public enum PacketTypeEnum {
 
-    RPC_RESPONSE_PACKET((byte)1, RpcResponse.class),
-    RPC_REQUEST_PACKET((byte)2, RpcRequest.class);
+    RPC_RESPONSE_PACKET((byte)1, RpcRequest.class),
+    RPC_REQUEST_PACKET((byte)2, RpcResponse.class);
 
     private byte code;
     private Class<? extends Packet> clazz;

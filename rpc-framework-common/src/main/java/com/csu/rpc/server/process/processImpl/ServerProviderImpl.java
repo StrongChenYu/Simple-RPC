@@ -1,6 +1,7 @@
 package com.csu.rpc.server.process.processImpl;
 
 import com.csu.rpc.bean.ServiceInfo;
+import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.enums.RegistryTypeEnum;
 import com.csu.rpc.registry.ServiceRegistry;
 import com.csu.rpc.registry.impl.ZookeeperRegistry;
@@ -25,24 +26,20 @@ public class ServerProviderImpl implements ServerProvider {
      */
     private final Map<String, ServiceInfo> servicesMap = new ConcurrentHashMap<>();
 
-    /**
-     * 这里是本机的地址和端口
-     */
-    public static final String IP = "127.0.0.1";
-    public static final int PORT = 8080;
 
     private ServiceRegistry getRegistry() {
         return SingletonFactory.getInstance(registerType.getClazz());
     }
 
     @Override
-    public void publishServer(Object serviceImpl, Class<?> interFace) {
+    public void publishServer(Object serviceImpl, Class<?> interFace, Integer port) {
         String serviceName = interFace.getSimpleName();
 
         ServiceInfo info = ServiceInfo.builder()
                 .name(serviceName)
                 .serverImpl(serviceImpl)
-                .interFace(interFace).build();
+                .interFace(interFace)
+                .port(port).build();
 
         System.out.println("注册服务：" + serviceName);
         publishServer(info);
@@ -54,7 +51,7 @@ public class ServerProviderImpl implements ServerProvider {
     }
 
     public void publishServer(ServiceInfo info) {
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(IP, PORT);
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(RpcConstants.IP, info.getPort());
         ServiceRegistry serviceRegistry = getRegistry();
 
         /**

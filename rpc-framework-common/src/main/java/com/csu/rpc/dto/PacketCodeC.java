@@ -9,11 +9,9 @@ import com.csu.rpc.enums.SerializerTypeEnum;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 
 @AllArgsConstructor
-@NoArgsConstructor
 public class PacketCodeC {
 
     public static PacketCodeC PACKETCODEC = new PacketCodeC();

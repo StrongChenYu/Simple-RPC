@@ -5,6 +5,7 @@ import com.csu.rpc.bean.ServiceInfo;
 import com.csu.rpc.server.process.processImpl.ServerProviderImpl;
 import com.csu.rpc.utils.SingletonFactory;
 
+import java.net.InetSocketAddress;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public interface ServerProvider {
 
     ServerProvider INSTANCE = new ServerProviderImpl();
 
-    void publishServer(Object serviceImpl, Class<?> interFace);
+    void publishServer(Object serviceImpl, Class<?> interFace, Integer port);
 
     ServiceInfo obtainService(String serviceName);
 
