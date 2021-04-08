@@ -11,7 +11,7 @@ import com.csu.rpc.utils.SingletonFactory;
  */
 public interface RpcRequestHandler {
 
-    RpcRequestHandler INSTANCE = SingletonFactory.getInstance(RpcRequestHandlerImpl.class);
+    RpcRequestHandler INSTANCE = new RpcRequestHandlerImpl();
 
     RpcResponse handleRpcRequest(RpcRequest request);
 

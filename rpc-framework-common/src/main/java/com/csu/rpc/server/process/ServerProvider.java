@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface ServerProvider {
 
-    ServerProvider INSTANCE = SingletonFactory.getInstance(ServerProviderImpl.class);
+    ServerProvider INSTANCE = new ServerProviderImpl();
 
     void publishServer(Object serviceImpl, Class<?> interFace);
 

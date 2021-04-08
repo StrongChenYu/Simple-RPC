@@ -1,6 +1,8 @@
-package com.csu.rpc.dto.serializer;
+package com.csu.rpc.dto.serializer.impl;
 
 import com.csu.rpc.dto.PacketCodeC;
+import com.csu.rpc.dto.serializer.Serializer;
+import com.csu.rpc.enums.PacketTypeEnum;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -15,9 +17,9 @@ public class KryoSerializer implements Serializer {
 
     private final ThreadLocal<Kryo> kryoThreadLocal = ThreadLocal.withInitial(() -> {
         Kryo kryo = new Kryo();
-        List<Class<?>> allClasses = PacketCodeC.getAllClasses();
-        for (Class<?> clazz : allClasses) {
-            kryo.register(clazz);
+        PacketTypeEnum[] values = PacketTypeEnum.values();
+        for (PacketTypeEnum value : values) {
+            kryo.register(value.getClazz());
         }
         return kryo;
     });

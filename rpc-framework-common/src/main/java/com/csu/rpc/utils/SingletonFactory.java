@@ -34,7 +34,4 @@ public class SingletonFactory {
         return clazz.cast(instance);
     }
 
-    public static void main(String[] args) throws NoSuchMethodException {
-        System.out.println(SingletonFactory.class.getDeclaredConstructor(int.class));
-    }
 }

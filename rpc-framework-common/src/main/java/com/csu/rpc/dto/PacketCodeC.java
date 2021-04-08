@@ -1,69 +1,48 @@
 package com.csu.rpc.dto;
 
 import com.csu.rpc.dto.compress.Compress;
-import com.csu.rpc.dto.compress.CompressAlgorithm;
-import com.csu.rpc.dto.compress.GzipCompress;
-import com.csu.rpc.dto.request.RpcRequest;
-import com.csu.rpc.dto.response.RpcResponse;
-import com.csu.rpc.dto.serializer.KryoSerializer;
 import com.csu.rpc.dto.serializer.Serializer;
-import com.csu.rpc.dto.serializer.SerializerAlgorithm;
-import com.csu.rpc.utils.RpcConstants;
+import com.csu.rpc.constant.RpcConstants;
+import com.csu.rpc.enums.CompressTypeEnum;
+import com.csu.rpc.enums.PacketTypeEnum;
+import com.csu.rpc.enums.SerializerTypeEnum;
+import com.csu.rpc.utils.SingletonFactory;
 import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class PacketCodeC {
 
     public static PacketCodeC PACKETCODEC = new PacketCodeC();
 
-    private static final Map<Byte, Class<? extends Packet>> packetTypeMap;
-    private static final Map<Byte, Serializer> serializerMap;
-    private static final Map<Byte, Compress> compressAlgorithmMap;
+    private final SerializerTypeEnum serializerType = SerializerTypeEnum.KRYO;
+    private final CompressTypeEnum compressType = CompressTypeEnum.GZIP;
 
-    private static final byte DEFAULT_SERIALIZER_ALGORITHM = 1;
-    private static final byte DEFAULT_COMPRESS_ALGORITHM = 1;
-
-    public static List<Class<?>> getAllClasses() {
-        return new ArrayList<>(packetTypeMap.values());
+    private Class<? extends Packet> getPacketType(Byte type) {
+        return PacketTypeEnum.getPacketClassByCode(type);
     }
 
-    static {
-        packetTypeMap = new ConcurrentHashMap<>();
-        serializerMap = new ConcurrentHashMap<>();
-        compressAlgorithmMap = new ConcurrentHashMap<>();
+    private Serializer getSerializerAlgorithm(Byte type) {
+        Class<? extends Serializer> serializerClass = SerializerTypeEnum.getSerializerClassByCode(type);
 
-        initPacketTypeMap();
-        initSerializerMap();
-        initCompressAlgorithmMap();
-    }
+        if (serializerClass == null) {
+            throw new RuntimeException("SerializerClass can't be null!");
+        }
 
-    /**
-     * 以后再改把
-     * 把这几个map中的东西都放进去，防止麻烦
-     */
-    private static void initPacketTypeMap() {
-        packetTypeMap.put(Command.RPC_RESPONSE_PACKET, RpcResponse.class);
-        packetTypeMap.put(Command.RPC_REQUEST_PACKET, RpcRequest.class);
-    }
-    private static void initSerializerMap() {
-        serializerMap.put(SerializerAlgorithm.KRYO_SERIALIZER_ALGORITHM, new KryoSerializer());
-    }
-    private static void initCompressAlgorithmMap() {
-        compressAlgorithmMap.put(CompressAlgorithm.GZIP_Algorithm, new GzipCompress());
+        return SingletonFactory.getInstance(serializerClass);
     }
 
-    private static Class<? extends Packet> getPacketType(Byte type) {
-        return packetTypeMap.get(type);
-    }
-    private static Serializer getSerializerAlgorithm(Byte type) {
-        return serializerMap.get(type);
-    }
-    private static Compress getCompressAlgorithm(Byte type) {
-        return compressAlgorithmMap.get(type);
+    private Compress getCompressAlgorithm(Byte type) {
+        Class<? extends Compress> compressClass = CompressTypeEnum.getCompressClassByCode(type);
+
+        if (compressClass == null) {
+            throw new RuntimeException("CompressClass can't be null!");
+        }
+
+        return SingletonFactory.getInstance(compressClass);
     }
 
     public Packet decode(ByteBuf byteBuf) {
@@ -73,7 +52,7 @@ public class PacketCodeC {
         byteBuf.readBytes(magic);
 
         //读取版本
-         byteBuf.readByte();
+        byteBuf.readByte();
 
         //数据包的长度
         int length = byteBuf.readInt();
@@ -118,8 +97,8 @@ public class PacketCodeC {
     }
 
     public void encode(ByteBuf byteBuf, Packet packet) {
-        Compress compress = getCompressAlgorithm(DEFAULT_COMPRESS_ALGORITHM);
-        Serializer serializer = getSerializerAlgorithm(DEFAULT_SERIALIZER_ALGORITHM);
+        Compress compress = getCompressAlgorithm(serializerType.getCode());
+        Serializer serializer = getSerializerAlgorithm(serializerType.getCode());
 
         byte[] compressBytes = compress.compress(serializer.serialize(packet));
 
@@ -127,10 +106,10 @@ public class PacketCodeC {
         byteBuf.writeByte(RpcConstants.VERSION);
         byteBuf.writeInt(compressBytes.length);
         byteBuf.writeByte(packet.serializerType());
-        byteBuf.writeByte(DEFAULT_COMPRESS_ALGORITHM);
-        byteBuf.writeByte(DEFAULT_SERIALIZER_ALGORITHM);
+        byteBuf.writeByte(compressType.getCode());
+        byteBuf.writeByte(serializerType.getCode());
 
-        //这个值不知道是啥
+        //返回的时候，不需要请求的ID,所以随便赋值一个
         byteBuf.writeInt(1);
         byteBuf.writeBytes(compressBytes);
     }

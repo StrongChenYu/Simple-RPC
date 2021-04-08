@@ -1,5 +1,6 @@
 package com.csu.rpc.registry.impl;
 
+import com.csu.rpc.enums.LoadBalanceTypeEnum;
 import com.csu.rpc.registry.LoadBalance;
 import com.csu.rpc.registry.ServerDiscovery;
 import com.csu.rpc.utils.SingletonFactory;
@@ -15,11 +16,16 @@ import java.util.List;
  */
 public class ZkServerDiscovery implements ServerDiscovery {
 
-    private LoadBalance loadBalance = SingletonFactory.getInstance(RandomLoadBalance.class);
-    private ZookeeperUtil zkUtils = SingletonFactory.getInstance(ZookeeperUtil.class);
+    private final LoadBalanceTypeEnum loadBalanceType = LoadBalanceTypeEnum.RANDOM;
+
+    private final ZookeeperUtil zkUtils = SingletonFactory.getInstance(ZookeeperUtil.class);
 
     public static final String ZOOKEEPER_ADDRESS = "127.0.0.1:2181";
     private static final String SERVICE_PREFIX = "/rpc/";
+
+    private LoadBalance getLoadBalance() {
+        return SingletonFactory.getInstance(loadBalanceType.getClazz());
+    }
 
     @Override
     public InetSocketAddress lookupServer(String serviceName) {
@@ -33,6 +39,7 @@ public class ZkServerDiscovery implements ServerDiscovery {
             return null;
         }
 
+        LoadBalance loadBalance = getLoadBalance();
         String serverPath = loadBalance.selectServer(children, serviceName);
 
         //log

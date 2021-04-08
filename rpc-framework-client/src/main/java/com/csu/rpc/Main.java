@@ -1,7 +1,6 @@
 package com.csu.rpc;
 
 import com.csu.rpc.annotation.RpcReference;
-import com.csu.rpc.annotation.RpcTest;
 import com.csu.rpc.controller.HelloController;
 import com.csu.rpc.proxy.RpcClientProxy;
 import com.csu.rpc.service.HelloService;

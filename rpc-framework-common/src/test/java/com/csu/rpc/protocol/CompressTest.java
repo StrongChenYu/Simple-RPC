@@ -2,7 +2,7 @@ package com.csu.rpc.protocol;
 
 
 import com.csu.rpc.dto.compress.Compress;
-import com.csu.rpc.dto.compress.GzipCompress;
+import com.csu.rpc.dto.compress.impl.GzipCompress;
 import org.junit.Assert;
 import org.junit.Test;
 

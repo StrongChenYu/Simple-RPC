@@ -1,4 +1,6 @@
-package com.csu.rpc.dto.compress;
+package com.csu.rpc.dto.compress.impl;
+
+import com.csu.rpc.dto.compress.Compress;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
