@@ -6,6 +6,7 @@ import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.server.handler.RpcRequestPacketHandler;
 import com.csu.rpc.server.process.ServerProvider;
 import com.csu.rpc.server.process.processImpl.ServerProviderImpl;
+import com.csu.rpc.utils.MockBeanContext;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -26,7 +27,7 @@ public class NettyServer {
 
     private final ServerBootstrap bootstrap = new ServerBootstrap();
     private final int port;
-    private final ServerProvider serverProvider = ServerProvider.INSTANCE;
+    private final ServerProvider serverProvider = MockBeanContext.DEFAULT_SERVER_PROVIDER;
 
     public NettyServer(int port) {
         this.port = port;

@@ -5,6 +5,7 @@ import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.server.process.RpcRequestHandler;
 import com.csu.rpc.server.process.ServerProvider;
+import com.csu.rpc.utils.MockBeanContext;
 import com.sun.nio.sctp.HandlerResult;
 
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +17,7 @@ import java.lang.reflect.Method;
  */
 public class RpcRequestHandlerImpl implements RpcRequestHandler {
 
-    private final ServerProvider serverProvider = ServerProvider.INSTANCE;
+    private final ServerProvider serverProvider = MockBeanContext.DEFAULT_SERVER_PROVIDER;
 
     @Override
     public RpcResponse handleRpcRequest(RpcRequest request) {

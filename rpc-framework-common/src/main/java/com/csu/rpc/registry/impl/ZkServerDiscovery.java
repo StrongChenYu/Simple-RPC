@@ -1,5 +1,6 @@
 package com.csu.rpc.registry.impl;
 
+import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.enums.LoadBalanceTypeEnum;
 import com.csu.rpc.registry.LoadBalance;
 import com.csu.rpc.registry.ServerDiscovery;
@@ -17,11 +18,9 @@ import java.util.List;
 public class ZkServerDiscovery implements ServerDiscovery {
 
     private final LoadBalanceTypeEnum loadBalanceType = LoadBalanceTypeEnum.RANDOM;
-
     private final ZookeeperUtil zkUtils = SingletonFactory.getInstance(ZookeeperUtil.class);
-
-    public static final String ZOOKEEPER_ADDRESS = "127.0.0.1:2181";
-    private static final String SERVICE_PREFIX = "/rpc/";
+    public static final String ZOOKEEPER_ADDRESS = RpcConstants.ZOOKEEPER_ADDRESS;;
+    private static final String SERVICE_PREFIX = RpcConstants.SERVICE_PREFIX;
 
     private LoadBalance getLoadBalance() {
         return SingletonFactory.getInstance(loadBalanceType.getClazz());
