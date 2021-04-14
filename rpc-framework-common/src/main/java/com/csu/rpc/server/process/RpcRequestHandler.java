@@ -3,7 +3,6 @@ package com.csu.rpc.server.process;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.server.process.processImpl.RpcRequestHandlerImpl;
-import com.csu.rpc.utils.SingletonFactory;
 
 /**
  * @Author Chen Yu
@@ -11,6 +10,7 @@ import com.csu.rpc.utils.SingletonFactory;
  */
 public interface RpcRequestHandler {
 
+    RpcRequestHandler INSTANCE = new RpcRequestHandlerImpl();
 
     RpcResponse handleRpcRequest(RpcRequest request);
 

@@ -15,7 +15,7 @@ public class ClientTest {
         CountDownLatch countDownLatch = new CountDownLatch(2);
 
         Thread server = new Thread(() -> {
-            NettyServer nettyServer = new NettyServer(8000);
+            NettyServer nettyServer = new NettyServer();
             nettyServer.start(countDownLatch);
         });
 

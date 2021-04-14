@@ -1,5 +1,7 @@
 package com.csu.rpc.registry;
 
+import com.csu.rpc.registry.impl.ZookeeperRegistry;
+
 import java.net.InetSocketAddress;
 
 /**
@@ -9,6 +11,8 @@ import java.net.InetSocketAddress;
  * @Date 2021/3/17 19:08
  */
 public interface ServiceRegistry {
+
+    ServiceRegistry INSTANCE = new ZookeeperRegistry();
 
     /**
      * 注册服务

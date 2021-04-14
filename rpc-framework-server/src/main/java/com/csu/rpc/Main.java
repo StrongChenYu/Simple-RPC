@@ -11,8 +11,8 @@ import com.csu.rpc.service.HelloServiceImpl;
 public class Main {
 
     public static void main(String[] args) {
-        NettyServer nettyServer = new NettyServer(8000);
-        nettyServer.scanAddService(new HelloServiceImpl(), HelloService.class);
+        NettyServer nettyServer = new NettyServer();
+        nettyServer.scanAddService(new HelloServiceImpl());
         nettyServer.start();
     }
 }

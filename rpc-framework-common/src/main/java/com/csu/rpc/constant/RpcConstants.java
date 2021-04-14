@@ -7,5 +7,8 @@ public class RpcConstants {
     public static final String IP = "127.0.0.1";
     public static final String ZOOKEEPER_ADDRESS = "127.0.0.1:2181";
     public static final String SERVICE_PREFIX = "/rpc/";
+    public static final Integer DEFAULT_PORT = 8000;
+    public static final String DEFAULT_VERSION = "0.0.0";
+    public static final String DEFAULT_GROUP = "group0";
 
 }

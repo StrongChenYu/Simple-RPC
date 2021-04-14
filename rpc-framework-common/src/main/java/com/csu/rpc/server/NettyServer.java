@@ -1,13 +1,11 @@
 package com.csu.rpc.server;
 
+import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
 import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.server.handler.RpcRequestPacketHandler;
 import com.csu.rpc.server.process.ServerProvider;
-import com.csu.rpc.server.process.processImpl.ServerProviderImpl;
-import com.csu.rpc.utils.MockBeanContext;
-import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -19,18 +17,17 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
-import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 public class NettyServer {
 
     private final ServerBootstrap bootstrap = new ServerBootstrap();
-    private final int port;
-    private final ServerProvider serverProvider = MockBeanContext.DEFAULT_SERVER_PROVIDER;
+    private final Integer port = RpcConstants.DEFAULT_PORT;
+    private final ServerProvider serverProvider = ServerProvider.INSTANCE;
 
-    public NettyServer(int port) {
-        this.port = port;
+
+    public NettyServer() {
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -100,12 +97,13 @@ public class NettyServer {
      * 这个类主要负责
      * 将这个服务器里面所有提供服务的类注册进来
      */
-    public void scanAddService(Object serviceImpl, Class<?> interFace) {
+    public void scanAddService(Object serviceImpl) {
         /**
          * ???????
          * 这里只传一个class可以调用吗???????
          */
-        serverProvider.publishServer(serviceImpl, interFace, port);
+        RpcServiceInfo rpcServiceInfo = new RpcServiceInfo();
+        serverProvider.publishServer(serviceImpl, rpcServiceInfo);
     }
 
     /**
@@ -115,7 +113,7 @@ public class NettyServer {
     public static void main(String[] args) {
 //        RpcRequestPacketHandler rpcRequestPacketHandler = new RpcRequestPacketHandler();
 //        System.out.println(rpcRequestPacketHandler);
-        NettyServer nettyServer = new NettyServer(8000);
+        NettyServer nettyServer = new NettyServer();
         nettyServer.start();
     }
 

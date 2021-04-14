@@ -1,12 +1,8 @@
 package com.csu.rpc.server.process;
 
 
-import com.csu.rpc.bean.ServiceInfo;
+import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.server.process.processImpl.ServerProviderImpl;
-import com.csu.rpc.utils.SingletonFactory;
-
-import java.net.InetSocketAddress;
-import java.util.List;
 
 /**
  * @Author Chen Yu
@@ -14,9 +10,10 @@ import java.util.List;
  */
 public interface ServerProvider {
 
+    ServerProvider INSTANCE = new ServerProviderImpl();
 
-    void publishServer(Object serviceImpl, Class<?> interFace, Integer port);
+    void publishServer(Object service, RpcServiceInfo serviceInfo);
 
-    ServiceInfo obtainService(String serviceName);
+    Object obtainService(RpcServiceInfo serviceInfo);
 
 }

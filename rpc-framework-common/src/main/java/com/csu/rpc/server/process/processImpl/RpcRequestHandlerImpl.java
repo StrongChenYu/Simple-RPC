@@ -1,12 +1,10 @@
 package com.csu.rpc.server.process.processImpl;
 
-import com.csu.rpc.bean.ServiceInfo;
+import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.server.process.RpcRequestHandler;
 import com.csu.rpc.server.process.ServerProvider;
-import com.csu.rpc.utils.MockBeanContext;
-import com.sun.nio.sctp.HandlerResult;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,19 +15,20 @@ import java.lang.reflect.Method;
  */
 public class RpcRequestHandlerImpl implements RpcRequestHandler {
 
-    private final ServerProvider serverProvider = MockBeanContext.DEFAULT_SERVER_PROVIDER;
+    private final ServerProvider serverProvider = ServerProvider.INSTANCE;
 
     @Override
     public RpcResponse handleRpcRequest(RpcRequest request) {
 
         String requestId = request.getRequestId();
+        RpcServiceInfo serviceInfo = new RpcServiceInfo(request.getServiceName(), request.getGroup(), request.getVersion());
 
         /**
          * 在本服务器上查找service
          * 找不到就不进行调用
          */
-        ServiceInfo serviceInfo = serverProvider.obtainService(request.getServiceName());
-        if (serviceInfo == null) {
+        Object serviceObject = serverProvider.obtainService(serviceInfo);
+        if (serviceObject == null) {
             System.out.println("2021.3.29 [没有找到服务不能调用]");
             return RpcResponse.SERVICE_NOT_FIND(requestId);
         }
@@ -41,7 +40,7 @@ public class RpcRequestHandlerImpl implements RpcRequestHandler {
          */
         Object res = null;
         try {
-            res = invokeMethod(serviceInfo.getServerImpl(),
+            res = invokeMethod(serviceObject,
                     request.getMethodName(),
                     request.getArgs(),
                     request.getArgTypes());

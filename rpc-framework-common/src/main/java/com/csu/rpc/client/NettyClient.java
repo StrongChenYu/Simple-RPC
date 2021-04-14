@@ -26,7 +26,7 @@ public class NettyClient {
 
 
     private static final Bootstrap bootstrap;
-    private ServerDiscovery serverDiscovery = SingletonFactory.getInstance(ZkServerDiscovery.class);
+    private ServerDiscovery serverDiscovery = ServerDiscovery.INSTANCE;
 
 
     public NettyClient() {}
