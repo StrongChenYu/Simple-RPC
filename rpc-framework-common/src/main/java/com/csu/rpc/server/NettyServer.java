@@ -106,39 +106,4 @@ public class NettyServer {
         serverProvider.publishServer(serviceImpl, rpcServiceInfo);
     }
 
-    /**
-     * 服务类的启动函数
-     * @param args
-     */
-    public static void main(String[] args) {
-//        RpcRequestPacketHandler rpcRequestPacketHandler = new RpcRequestPacketHandler();
-//        System.out.println(rpcRequestPacketHandler);
-        NettyServer nettyServer = new NettyServer();
-        nettyServer.start();
-    }
-
-//    private void bind() {
-//        try {
-//            ChannelFuture sync = bootstrap.bind(port).sync();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//    private void bind(){
-//        ChannelFuture channelFuture = bootstrap.bind(port).addListener(future -> {
-//            if (future.isSuccess()) {
-//                System.out.println(new Date() + "端口[" + port + "]绑定成功!");
-//            } else {
-//                System.err.println(new Date() + "端口[" + port + "]绑定失败!");
-//            }
-//        });
-//
-//        try {
-//            //给老子等着
-//            channelFuture.sync();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
 }

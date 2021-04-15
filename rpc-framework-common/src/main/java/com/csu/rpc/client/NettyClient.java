@@ -1,5 +1,6 @@
 package com.csu.rpc.client;
 
+import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.client.handler.NettyClientHandler;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
@@ -49,7 +50,11 @@ public class NettyClient {
     }
 
     public RpcResponse sendMessage(RpcRequest rpcRequest) {
-        InetSocketAddress address = serverDiscovery.lookupServer(rpcRequest.getServiceName());
+
+        RpcServiceInfo serviceInfo = getRpcServiceInfo(rpcRequest);
+
+        //这里要将rpcRequest中的group和version提取出来，然后再去搜索
+        InetSocketAddress address = serverDiscovery.lookupServer(serviceInfo);
 
         try {
             ChannelFuture sync = bootstrap.connect(address.getHostName(), address.getPort()).sync();
@@ -73,4 +78,14 @@ public class NettyClient {
         return null;
     }
 
+    /**
+     * 将rpc request包中的信息转化成
+     * 相应的信息
+     * @param rpcRequest
+     * @return
+     */
+    private RpcServiceInfo getRpcServiceInfo(RpcRequest rpcRequest) {
+        RpcServiceInfo serviceInfo = new RpcServiceInfo(rpcRequest.getServiceName(), rpcRequest.getGroup(), rpcRequest.getVersion());
+        return serviceInfo;
+    }
 }

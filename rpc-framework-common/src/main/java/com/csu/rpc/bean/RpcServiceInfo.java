@@ -33,6 +33,7 @@ public class RpcServiceInfo {
         return String.format("%s/%s/%s", serviceName, group, version);
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

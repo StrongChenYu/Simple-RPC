@@ -1,5 +1,6 @@
 package com.csu.rpc.registry.impl;
 
+import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.enums.LoadBalanceTypeEnum;
 import com.csu.rpc.registry.LoadBalance;
@@ -27,11 +28,11 @@ public class ZkServerDiscovery implements ServerDiscovery {
     }
 
     @Override
-    public InetSocketAddress lookupServer(String serviceName) {
+    public InetSocketAddress lookupServer(RpcServiceInfo serviceInfo) {
         /**
          * 获取拥有该服务的所有服务器
          */
-        List<String> children = zkUtils.getChildren(ZOOKEEPER_ADDRESS, SERVICE_PREFIX + serviceName);
+        List<String> children = zkUtils.getChildren(ZOOKEEPER_ADDRESS, SERVICE_PREFIX + serviceInfo.toRegisterRpcServiceName());
 
         if (children == null || children.size() == 0) {
             //这里可以抛一个runTimeException
@@ -39,7 +40,7 @@ public class ZkServerDiscovery implements ServerDiscovery {
         }
 
         LoadBalance loadBalance = getLoadBalance();
-        String serverPath = loadBalance.selectServer(children, serviceName);
+        String serverPath = loadBalance.selectServer(children, serviceInfo.getServiceName());
 
         //log
         System.out.println(new Date() + "choose:" + serverPath);

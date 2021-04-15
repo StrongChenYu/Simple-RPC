@@ -1,6 +1,6 @@
 package com.csu.rpc.proxy;
 
-import com.csu.rpc.bean.RemoteServiceProperties;
+import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.client.NettyClient;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
@@ -16,14 +16,14 @@ import java.util.UUID;
  */
 public class RpcClientProxy implements InvocationHandler {
 
-    private RemoteServiceProperties serviceProperties;
+    private RpcServiceInfo serviceInfo;
 
-    public RpcClientProxy(RemoteServiceProperties serviceProperties) {
-        this.serviceProperties = serviceProperties;
+    public RpcClientProxy(RpcServiceInfo serviceInfo) {
+        this.serviceInfo = serviceInfo;
     }
 
     public RpcClientProxy() {
-        this.serviceProperties = new RemoteServiceProperties();
+        this.serviceInfo = new RpcServiceInfo();
     }
 
     /**
@@ -41,14 +41,18 @@ public class RpcClientProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         NettyClient nettyClient = new NettyClient();
 
-        String interfaceName = method.getDeclaringClass().getSimpleName();
+        String serviceName = serviceInfo.getServiceName();
+        //服务名默认为method.getDeclaringClass().getSimpleName()
+        if (serviceName == null || serviceName.equals("")) {
+            serviceName = method.getDeclaringClass().getSimpleName();
+        }
 
         RpcRequest rpcRequest = RpcRequest.builder()
-                .serviceName(interfaceName)
+                .serviceName(serviceName)
                 .methodName(method.getName())
                 .requestId(UUID.randomUUID().toString())
-                .group(serviceProperties.getGroup())
-                .version(serviceProperties.getVersion())
+                .group(serviceInfo.getGroup())
+                .version(serviceInfo.getVersion())
                 .args(args)
                 .argTypes(method.getParameterTypes())
                 .build();

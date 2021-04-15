@@ -1,5 +1,6 @@
 package com.csu.rpc.registry;
 
+import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.registry.impl.ZkServerDiscovery;
 
 import java.net.InetSocketAddress;
@@ -17,6 +18,6 @@ public interface ServerDiscovery {
      * @param serviceName
      * @return
      */
-    InetSocketAddress lookupServer(String serviceName);
+    InetSocketAddress lookupServer(RpcServiceInfo serviceInfo);
 
 }
