@@ -3,6 +3,7 @@ package com.csu.rpc.server.handler;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.server.process.RpcRequestHandler;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -19,7 +20,8 @@ public class RpcRequestPacketHandler extends SimpleChannelInboundHandler<RpcRequ
         System.out.println("服务端收到消息：" + request.toString());
 
         RpcResponse response = requestHandler.handleRpcRequest(request);
-        ctx.channel().writeAndFlush(response);
+
+        ctx.channel().writeAndFlush(response).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 
 }

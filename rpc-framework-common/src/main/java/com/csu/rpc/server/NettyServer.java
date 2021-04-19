@@ -75,19 +75,13 @@ public class NettyServer {
     public void start(){
         try {
             ChannelFuture f = bootstrap.bind(port).sync();
-
             f.addListener(future -> {
                 if (future.isSuccess()) {
                     System.out.println(new Date() + "端口[" + port + "]绑定成功!");
-
-                    //这里扫描包并注册到providerService里面
-                    //scanAddService();
-
                 } else {
                     System.err.println(new Date() + "端口[" + port + "]绑定失败!");
                 }
             });
-
         } catch (Exception e) {
             e.printStackTrace();
         }

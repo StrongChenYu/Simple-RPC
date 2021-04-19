@@ -2,12 +2,12 @@ package com.csu.rpc.client;
 
 import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.client.handler.NettyClientHandler;
+import com.csu.rpc.client.handler.UnProcessRequestsManager;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.registry.ServerDiscovery;
-import com.csu.rpc.registry.impl.ZkServerDiscovery;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -22,13 +22,15 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.AttributeKey;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class NettyClient {
 
 
     private static final Bootstrap bootstrap;
-    private ServerDiscovery serverDiscovery = ServerDiscovery.INSTANCE;
-
+    private final ServerDiscovery serverDiscovery = ServerDiscovery.INSTANCE;
+    private final UnProcessRequestsManager unProcessRequestsManager = SingletonFactory.getInstance(UnProcessRequestsManager.class);
 
     public NettyClient() {}
 
@@ -50,7 +52,7 @@ public class NettyClient {
     }
 
     public RpcResponse sendMessage(RpcRequest rpcRequest) {
-
+        CompletableFuture<RpcResponse> responseFuture = new CompletableFuture<>();
         RpcServiceInfo serviceInfo = getRpcServiceInfo(rpcRequest);
 
         //这里要将rpcRequest中的group和version提取出来，然后再去搜索
@@ -63,15 +65,15 @@ public class NettyClient {
             if (futureChannel != null) {
                 futureChannel.writeAndFlush(rpcRequest).addListener(future -> {
                     if (future.isSuccess()) {
+
+                        unProcessRequestsManager.addUnProcessRequest(rpcRequest.getRequestId(), responseFuture);
                         System.out.println("客户端发送消息：" + rpcRequest.toString());
                     }
                 });
             }
 
-            //futureChannel.closeFuture().sync();
-            AttributeKey<RpcResponse> key = AttributeKey.valueOf("RpcResponse");
-            return futureChannel.attr(key).get();
-        } catch (InterruptedException e) {
+            return responseFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
