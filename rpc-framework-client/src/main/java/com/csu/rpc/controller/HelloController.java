@@ -3,12 +3,13 @@ package com.csu.rpc.controller;
 import com.csu.rpc.annotation.RpcReference;
 import com.csu.rpc.service.HelloService;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 /**
  * @Author Chen Yu
  * @Date 2021/3/29 20:35
  */
-@Component
+@Controller
 public class HelloController {
 
     @RpcReference

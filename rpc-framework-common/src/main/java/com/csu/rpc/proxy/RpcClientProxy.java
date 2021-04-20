@@ -22,9 +22,6 @@ public class RpcClientProxy implements InvocationHandler {
         this.serviceInfo = serviceInfo;
     }
 
-    public RpcClientProxy() {
-        this.serviceInfo = new RpcServiceInfo();
-    }
 
     /**
      * 返回代理类

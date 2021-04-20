@@ -26,7 +26,10 @@ public class ServerProviderImpl implements ServerProvider {
         //给default的属性赋值
         String serviceName = serviceInfo.getServiceName();
         if (serviceName == null || serviceName.equals("")) {
-            Class<?> serviceInterface = service.getClass().getInterfaces()[0];
+            Class<?>[] interfaces = service.getClass().getInterfaces();
+            if (interfaces.length == 0) throw new RuntimeException("service interface can not be null!");
+
+            Class<?> serviceInterface = interfaces[0];
             serviceInfo.setServiceName(serviceInterface.getSimpleName());
         }
 

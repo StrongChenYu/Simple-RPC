@@ -15,24 +15,5 @@ import java.lang.reflect.Field;
  */
 public class AutoScanConfig {
 
-    RpcClientProxy proxy = new RpcClientProxy();
-
-    public void scanAndAutoConfigProxy() {
-
-        Field[] declaredFields = HelloController.class.getDeclaredFields();
-
-        for (Field field : declaredFields) {
-            if (field.getAnnotation(RpcReference.class) == null) {
-                continue;
-            }
-
-            field.setAccessible(true);
-//
-            HelloService helloService = this.proxy.getProxy(HelloService.class);
-//           这里得new一个实体类的对象才可以将相应的属性赋值
-//            field.set();
-        }
-
-    }
 
 }

@@ -16,16 +16,17 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
+@Component
 public class NettyServer {
 
     private final ServerBootstrap bootstrap = new ServerBootstrap();
     private final Integer port = RpcConstants.DEFAULT_PORT;
     private final ServerProvider serverProvider = ServerProvider.INSTANCE;
-
 
     public NettyServer() {
 

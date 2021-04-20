@@ -1,5 +1,7 @@
 package com.csu.rpc.annotation;
 
+import com.csu.rpc.constant.RpcConstants;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,4 +13,9 @@ import java.lang.annotation.*;
 @Inherited
 @Documented
 public @interface RpcReference {
+
+    String version() default RpcConstants.DEFAULT_VERSION;
+
+
+    String group() default RpcConstants.DEFAULT_GROUP;
 }
