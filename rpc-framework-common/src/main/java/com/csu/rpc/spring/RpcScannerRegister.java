@@ -2,6 +2,7 @@ package com.csu.rpc.spring;
 
 import com.csu.rpc.annotation.RpcScan;
 import com.csu.rpc.annotation.RpcService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -14,6 +15,7 @@ import org.springframework.core.type.StandardAnnotationMetadata;
  * @Author Chen Yu
  * @Date 2021/4/19 20:50
  */
+@Slf4j
 public class RpcScannerRegister implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
 
     private ResourceLoader resourceLoader;
@@ -49,6 +51,6 @@ public class RpcScannerRegister implements ImportBeanDefinitionRegistrar, Resour
         }
 
         int scan = scanner.scan(basePackages);
-        System.out.println(scan);
+        log.info("Total scan {} bean in project", scan);
     }
 }

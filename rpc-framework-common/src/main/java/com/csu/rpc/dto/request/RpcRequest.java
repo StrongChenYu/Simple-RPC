@@ -4,6 +4,7 @@ import com.csu.rpc.dto.Command;
 import com.csu.rpc.dto.Packet;
 import lombok.*;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 @Builder
@@ -12,7 +13,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @Data
-@ToString
 public class RpcRequest extends Packet {
 
     /**
@@ -67,5 +67,16 @@ public class RpcRequest extends Packet {
     @Override
     public Byte serializerType() {
         return Command.RPC_REQUEST_PACKET;
+    }
+
+    @Override
+    public String toString() {
+        return "RpcRequest{" +
+                "serviceName='" + serviceName + '\'' +
+                ", methodName='" + methodName + '\'' +
+                ", version='" + version + '\'' +
+                ", group='" + group + '\'' +
+                ", requestId='" + requestId + '\'' +
+                '}';
     }
 }

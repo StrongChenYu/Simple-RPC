@@ -12,7 +12,6 @@ public class NettyKryoEncoder extends MessageToByteEncoder<Packet> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet msg, ByteBuf out) throws Exception {
-        System.out.println("将对象编码到ByteBuf...");
         PacketCodeC.PACKETCODEC.encode(out, msg);
     }
 }

@@ -7,6 +7,7 @@ import com.csu.rpc.registry.LoadBalance;
 import com.csu.rpc.registry.ServerDiscovery;
 import com.csu.rpc.utils.SingletonFactory;
 import com.csu.rpc.utils.ZookeeperUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.Date;
@@ -16,6 +17,7 @@ import java.util.List;
  * @Author Chen Yu
  * @Date 2021/4/7 19:52
  */
+@Slf4j
 public class ZkServerDiscovery implements ServerDiscovery {
 
     private final LoadBalanceTypeEnum loadBalanceType = LoadBalanceTypeEnum.RANDOM;
@@ -35,16 +37,15 @@ public class ZkServerDiscovery implements ServerDiscovery {
         List<String> children = zkUtils.getChildren(ZOOKEEPER_ADDRESS, SERVICE_PREFIX + serviceInfo.toRegisterRpcServiceName());
 
         if (children == null || children.size() == 0) {
-            //这里可以抛一个runTimeException
-            return null;
+            log.error("Zookeeper don't have any information about service {}", serviceInfo.getServiceName());
+            throw new RuntimeException("Zookeeper don't have any information about service");
         }
 
         LoadBalance loadBalance = getLoadBalance();
         String serverPath = loadBalance.selectServer(children, serviceInfo.getServiceName());
 
         //log
-        System.out.println(new Date() + "choose:" + serverPath);
-
+        log.info("Client choose server: {}", serverPath);
         String[] splits = serverPath.split(":");
         return new InetSocketAddress(splits[0], Integer.parseInt(splits[1]));
     }

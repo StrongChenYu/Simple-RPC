@@ -10,31 +10,32 @@ import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.registry.ServerDiscovery;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 public class NettyClient {
-    private static final Bootstrap bootstrap;
+    private final Bootstrap bootstrap;
     private final ServerDiscovery serverDiscovery = ServerDiscovery.INSTANCE;
     private final UnProcessRequestsManager unProcessRequestsManager = SingletonFactory.getInstance(UnProcessRequestsManager.class);
+    private final EventLoopGroup eventLoopGroup;
+    private final static int MAX_RETRY = 1;
 
-    public NettyClient() {}
 
-    static {
-        EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+    public NettyClient() {
+        eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
 
         bootstrap.group(eventLoopGroup)
@@ -50,6 +51,32 @@ public class NettyClient {
                 });
     }
 
+
+    public Channel doConnect(InetSocketAddress inetSocketAddress) throws ExecutionException, InterruptedException {
+        CompletableFuture<Channel> connectFuture = new CompletableFuture<>();
+        connect(bootstrap, inetSocketAddress, 1, connectFuture);
+        return connectFuture.get();
+    }
+
+    private void connect(Bootstrap bootstrap, InetSocketAddress address, int retry, CompletableFuture<Channel> connectFuture) {
+        bootstrap.connect(address).addListener((ChannelFutureListener) future -> {
+            if (future.isSuccess()) {
+                log.info("Client connected server {} successful!", address.toString());
+                connectFuture.complete(future.channel());
+            } else if (retry == 0) {
+                log.error("Client failed in {} attempts to connect and gave up to connect server {}", MAX_RETRY, address);
+                connectFuture.completeExceptionally(future.cause());
+            } else {
+                // 第几次重连
+                int order = (MAX_RETRY - retry) + 1;
+                // 本次重连的间隔
+                int delay = 1 << order;
+                log.warn("Client failed to connect server and retry");
+                bootstrap.config().group().schedule(() -> connect(bootstrap, address, retry - 1, connectFuture), delay, TimeUnit
+                        .SECONDS);
+            }
+        });
+    }
     public RpcResponse sendMessage(RpcRequest rpcRequest) {
         CompletableFuture<RpcResponse> responseFuture = new CompletableFuture<>();
         RpcServiceInfo serviceInfo = getRpcServiceInfo(rpcRequest);
@@ -57,22 +84,34 @@ public class NettyClient {
         //这里要将rpcRequest中的group和version提取出来，然后再去搜索
         InetSocketAddress address = serverDiscovery.lookupServer(serviceInfo);
 
+        /**
+         * 连接服务端
+         */
+        Channel futureChannel = null;
         try {
-            ChannelFuture sync = bootstrap.connect(address.getHostName(), address.getPort()).sync();
-            Channel futureChannel = sync.channel();
+            futureChannel = doConnect(address);
+        } catch (InterruptedException | ExecutionException e) {
+            //连接不成功就直接关掉
+            eventLoopGroup.shutdownGracefully();
+            e.printStackTrace();
+        }
 
-            if (futureChannel != null) {
-                futureChannel.writeAndFlush(rpcRequest).addListener(future -> {
-                    if (future.isSuccess()) {
+        /**
+         * 如果连接成功就发送请求
+         */
+        if (futureChannel != null) {
+            futureChannel.writeAndFlush(rpcRequest).addListener(future -> {
+                if (future.isSuccess()) {
+                    unProcessRequestsManager.addUnProcessRequest(rpcRequest.getRequestId(), responseFuture);
+                    log.info("Client send rpc request packet {}", rpcRequest.toString());
+                }
+            });
+        }
 
-                        unProcessRequestsManager.addUnProcessRequest(rpcRequest.getRequestId(), responseFuture);
-                        System.out.println("客户端发送消息：" + rpcRequest.toString());
-                    }
-                });
-            }
-
+        try {
             return responseFuture.get();
         } catch (InterruptedException | ExecutionException e) {
+            log.error("Response Packet receive fail !");
             e.printStackTrace();
         }
 

@@ -11,7 +11,6 @@ import lombok.*;
 @Getter
 @Setter
 @Data
-@ToString
 public class RpcResponse extends Packet {
 
     /**
@@ -69,4 +68,14 @@ public class RpcResponse extends Packet {
     public Byte serializerType() {
         return Command.RPC_RESPONSE_PACKET;
     }
+
+    @Override
+    public String toString() {
+        return "RpcResponse{" +
+                "requestId='" + requestId + '\'' +
+                ", code=" + code +
+                ", message='" + message + '\'' +
+                '}';
+    }
+
 }

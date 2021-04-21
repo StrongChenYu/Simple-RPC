@@ -4,6 +4,7 @@ import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.client.NettyClient;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -14,6 +15,7 @@ import java.util.UUID;
  * @Author Chen Yu
  * @Date 2021/3/29 19:43
  */
+@Slf4j
 public class RpcClientProxy implements InvocationHandler {
 
     private RpcServiceInfo serviceInfo;
@@ -56,6 +58,7 @@ public class RpcClientProxy implements InvocationHandler {
 
 
         RpcResponse response = nettyClient.sendMessage(rpcRequest);
+
 
         return response.getData();
     }

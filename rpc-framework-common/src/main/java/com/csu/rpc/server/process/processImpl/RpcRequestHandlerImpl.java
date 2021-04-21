@@ -5,6 +5,7 @@ import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.server.process.RpcRequestHandler;
 import com.csu.rpc.server.process.ServerProvider;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,6 +14,7 @@ import java.lang.reflect.Method;
  * @Author Chen Yu
  * @Date 2021/3/23 20:34
  */
+@Slf4j
 public class RpcRequestHandlerImpl implements RpcRequestHandler {
 
     private final ServerProvider serverProvider = ServerProvider.INSTANCE;
@@ -29,7 +31,7 @@ public class RpcRequestHandlerImpl implements RpcRequestHandler {
          */
         Object serviceObject = serverProvider.obtainService(serviceInfo);
         if (serviceObject == null) {
-            System.out.println("2021.3.29 [没有找到服务不能调用]");
+            log.warn("服务端没有找到服务{}", request.getServiceName());
             return RpcResponse.SERVICE_NOT_FIND(requestId);
         }
 
@@ -45,11 +47,12 @@ public class RpcRequestHandlerImpl implements RpcRequestHandler {
                     request.getArgs(),
                     request.getArgTypes());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            System.out.println("2021.3.29 [调用服务出现异常]");
+            log.error("Invoke rpc service {} fail", request.getServiceName());
             e.printStackTrace();
             return RpcResponse.INVOKE_ERROR(requestId);
         }
 
+        log.info("Invoke rpc service {} successfully", request.getServiceName());
         return RpcResponse.SUCCESS(requestId, res);
     }
 
@@ -59,8 +62,6 @@ public class RpcRequestHandlerImpl implements RpcRequestHandler {
         Method method = service.getClass().getMethod(methodName, argTypes);
         res = method.invoke(service, args);
 
-        //log 以后记得用开源框架替代了
-        System.out.println("invoke method[" + methodName + "]from Object" + service);
         return res;
     }
 

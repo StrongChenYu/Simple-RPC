@@ -1,6 +1,7 @@
 package com.csu.rpc.utils;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @Author Chen Yu
  * @Date 2021/3/18 20:56
  */
+@Slf4j
 public class ZookeeperUtil {
 
     
@@ -33,9 +35,10 @@ public class ZookeeperUtil {
 
         try {
             if (!zkClient.blockUntilConnected(5, TimeUnit.SECONDS)) {
+                log.error("Can not connect to zookeeper!");
                 throw new RuntimeException("Time out waiting to connect to ZK!");
             } else {
-                System.out.println("连接成功！");
+                log.info("Successfully connect to zookeeper");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -59,7 +62,7 @@ public class ZookeeperUtil {
         try (CuratorFramework client = getZkClient(address)) {
             if (client.checkExists().forPath(path) != null) {
                 //节点已经存在，这时候怎么办？
-                System.out.println("节点已经存在！");
+                log.warn("{} already exists", path);
                 return;
             }
             //节点不存在
@@ -72,7 +75,7 @@ public class ZookeeperUtil {
                     .withMode(CreateMode.PERSISTENT)
                     .forPath(path, bytesValue);
 
-            System.out.println(path + "节点创建成功！");
+            log.info("{} created successfully ! ", path);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,7 +93,7 @@ public class ZookeeperUtil {
         try (CuratorFramework client = getZkClient(address)) {
             if (client.checkExists().forPath(path) == null) {
                 //节点不存在
-                System.out.println("节点不存在！");
+                log.warn("{} does not exist", path);
                 return;
             }
 
@@ -144,7 +147,7 @@ public class ZookeeperUtil {
         try (CuratorFramework client = getZkClient(address)){
             if (client.checkExists().forPath(path) == null) {
                 //节点不存在
-                System.out.println("节点不存在！");
+                log.warn("{} does not exist", path);
                 return;
             }
 

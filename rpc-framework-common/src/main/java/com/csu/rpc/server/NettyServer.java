@@ -16,17 +16,22 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 @Component
+@Slf4j
 public class NettyServer {
 
     private final ServerBootstrap bootstrap = new ServerBootstrap();
     private final Integer port = RpcConstants.DEFAULT_PORT;
     private final ServerProvider serverProvider = ServerProvider.INSTANCE;
+
 
     public NettyServer() {
 
@@ -78,9 +83,9 @@ public class NettyServer {
             ChannelFuture f = bootstrap.bind(port).sync();
             f.addListener(future -> {
                 if (future.isSuccess()) {
-                    System.out.println(new Date() + "端口[" + port + "]绑定成功!");
+                    log.info("Server success to bind port {}", port);
                 } else {
-                    System.err.println(new Date() + "端口[" + port + "]绑定失败!");
+                    log.error("Server fail to bind port {}", port);
                 }
             });
         } catch (Exception e) {
