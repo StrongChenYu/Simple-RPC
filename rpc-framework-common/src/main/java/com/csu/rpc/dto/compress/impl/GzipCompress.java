@@ -1,5 +1,6 @@
 package com.csu.rpc.dto.compress.impl;
 
+import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.dto.compress.Compress;
 
 import java.io.ByteArrayInputStream;
@@ -10,7 +11,7 @@ import java.util.zip.GZIPOutputStream;
 
 public class GzipCompress implements Compress {
 
-    private static final int BUFFER_SIZE = 1024 * 4;
+    private static final Integer BUFFER_SIZE = RpcConstants.GZIP_COMPRESS_GZIP_SIZE;
 
     @Override
     public byte[] compress(byte[] bytes) {

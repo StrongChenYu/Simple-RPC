@@ -4,7 +4,7 @@ import com.csu.rpc.annotation.RpcScan;
 import com.csu.rpc.server.NettyServer;
 import com.csu.rpc.service.HelloService;
 import com.csu.rpc.service.HelloServiceImpl;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 
 /**
  * @Author Chen Yu

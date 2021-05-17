@@ -23,6 +23,7 @@ public class RpcRequestPacketHandler extends SimpleChannelInboundHandler<RpcRequ
 
         RpcResponse response = requestHandler.handleRpcRequest(request);
 
+        Thread.sleep(5000);
         ctx.channel().writeAndFlush(response).addListener(future -> {
             log.info("Server return response packet successfully!");
         });

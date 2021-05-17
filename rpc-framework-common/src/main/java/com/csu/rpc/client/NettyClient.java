@@ -5,6 +5,7 @@ import com.csu.rpc.client.handler.NettyClientHandler;
 import com.csu.rpc.client.handler.UnProcessRequestsManager;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
+import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.registry.ServerDiscovery;
@@ -18,11 +19,11 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Component
 @Slf4j
@@ -31,7 +32,7 @@ public class NettyClient {
     private final ServerDiscovery serverDiscovery = ServerDiscovery.INSTANCE;
     private final UnProcessRequestsManager unProcessRequestsManager = SingletonFactory.getInstance(UnProcessRequestsManager.class);
     private final EventLoopGroup eventLoopGroup;
-    private final static int MAX_RETRY = 1;
+    private final static Integer MAX_RETRY = RpcConstants.MAX_RETRY;
 
 
     public NettyClient() {
@@ -77,6 +78,7 @@ public class NettyClient {
             }
         });
     }
+
     public RpcResponse sendMessage(RpcRequest rpcRequest) {
         CompletableFuture<RpcResponse> responseFuture = new CompletableFuture<>();
         RpcServiceInfo serviceInfo = getRpcServiceInfo(rpcRequest);
@@ -109,9 +111,15 @@ public class NettyClient {
         }
 
         try {
-            return responseFuture.get();
+            //同步超时机制
+            return responseFuture.get(5, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException e) {
             log.error("Response Packet receive fail !");
+
+            e.printStackTrace();
+            eventLoopGroup.shutdownGracefully();
+        } catch (TimeoutException e) {
+            log.error("Time out to receive response packet !");
             e.printStackTrace();
         }
 

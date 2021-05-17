@@ -2,7 +2,6 @@ package com.csu.rpc.coder;
 
 import com.csu.rpc.dto.Packet;
 import com.csu.rpc.dto.PacketCodeC;
-import com.csu.rpc.utils.SingletonFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
