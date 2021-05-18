@@ -52,7 +52,7 @@ public class NettyServer {
     }
 
     /**
-     * just for test
+     * !!!!!!!!!!!just for test
      *
      * test最后会强制关闭jvm
      * 所以需要使用CountDownLatch等待服务器关闭
