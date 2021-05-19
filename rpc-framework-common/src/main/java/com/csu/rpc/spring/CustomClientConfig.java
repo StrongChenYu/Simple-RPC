@@ -20,6 +20,7 @@ public class CustomClientConfig {
     @Value("${rpc.client.maxRetry:3}")
     Integer maxRetry;
 
+
     /**
      * 客户端的注册中心
      * rpc.client.registerCentral
