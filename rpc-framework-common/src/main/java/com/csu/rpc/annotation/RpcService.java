@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Inherited
 @Documented
 public @interface RpcService {
-    String version() default RpcConstants.DEFAULT_VERSION;
+    byte version() default RpcConstants.DEFAULT_VERSION;
     String group() default RpcConstants.DEFAULT_GROUP;
     String serviceName() default "";
 }

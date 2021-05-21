@@ -1,10 +1,9 @@
-package com.csu.rpc.spring;
+package com.csu.rpc.config;
 
 import com.csu.rpc.constant.RpcConstants;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -14,15 +13,16 @@ import java.util.Properties;
 
 @Slf4j
 @Getter
-@Component
 public class RpcConfig {
+
+    public final static RpcConfig RPC_CONFIG = new RpcConfig();
 
     private CustomClientConfig clientConfig;
     private CustomServerConfig serverConfig;
     private final static String SERVER_PREFIX = "rpc.server";
     private final static String CLIENT_PREFIX = "rpc.client";
 
-    public RpcConfig() {
+    private RpcConfig() {
         loadConfig();
     }
 
@@ -100,6 +100,7 @@ public class RpcConfig {
     }
 
     private void configObject(Object object, String fieldName, String value) throws IllegalAccessException, NoSuchFieldException {
+
         Field declaredField = object.getClass().getDeclaredField(fieldName);
         Class<?> type = declaredField.getType();
 
@@ -178,7 +179,6 @@ public class RpcConfig {
         RpcConfig config = new RpcConfig();
         System.out.println(config.getClientConfig());
         System.out.println(config.getServerConfig());
-
 
 //        Object cast = type.cast("123");
 //        System.out.println(cast);

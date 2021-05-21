@@ -5,11 +5,10 @@ import com.csu.rpc.client.handler.NettyClientHandler;
 import com.csu.rpc.client.handler.UnProcessRequestsManager;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
-import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.registry.ServerDiscovery;
-import com.csu.rpc.spring.RpcConfig;
+import com.csu.rpc.config.RpcConfig;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -19,7 +18,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
@@ -35,8 +33,7 @@ public class NettyClient {
     private final UnProcessRequestsManager unProcessRequestsManager = SingletonFactory.getInstance(UnProcessRequestsManager.class);
     private final EventLoopGroup eventLoopGroup;
 
-    @Autowired
-    RpcConfig rpcConfig;
+    private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
 
     public NettyClient() {
         eventLoopGroup = new NioEventLoopGroup();
@@ -116,15 +113,12 @@ public class NettyClient {
 
         try {
             //同步超时机制
-            return responseFuture.get(5, TimeUnit.SECONDS);
+            return responseFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             log.error("Response Packet receive fail !");
 
             e.printStackTrace();
             eventLoopGroup.shutdownGracefully();
-        } catch (TimeoutException e) {
-            log.error("Time out to receive response packet !");
-            e.printStackTrace();
         }
 
         return null;

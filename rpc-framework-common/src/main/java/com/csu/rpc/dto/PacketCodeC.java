@@ -1,6 +1,7 @@
 package com.csu.rpc.dto;
 
 import com.csu.rpc.dto.compress.Compress;
+import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.serializer.Serializer;
 import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.enums.CompressTypeEnum;
@@ -101,7 +102,7 @@ public class PacketCodeC {
         byte[] compressBytes = compress.compress(serializer.serialize(packet));
 
         byteBuf.writeBytes(RpcConstants.MAGIC_NUMBER);
-        byteBuf.writeByte(RpcConstants.VERSION);
+        byteBuf.writeByte(RpcConstants.DEFAULT_VERSION);
         byteBuf.writeInt(compressBytes.length);
         byteBuf.writeByte(packet.serializerType());
         byteBuf.writeByte(compressType.getCode());

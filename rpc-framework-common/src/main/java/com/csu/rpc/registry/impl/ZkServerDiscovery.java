@@ -5,12 +5,10 @@ import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.enums.LoadBalanceTypeEnum;
 import com.csu.rpc.registry.LoadBalance;
 import com.csu.rpc.registry.ServerDiscovery;
-import com.csu.rpc.spring.RpcConfig;
+import com.csu.rpc.config.RpcConfig;
 import com.csu.rpc.utils.SingletonFactory;
 import com.csu.rpc.utils.ZookeeperUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -20,15 +18,13 @@ import java.util.List;
  * @Date 2021/4/7 19:52
  */
 @Slf4j
-@Component
 public class ZkServerDiscovery implements ServerDiscovery {
 
     private final LoadBalanceTypeEnum loadBalanceType = LoadBalanceTypeEnum.RANDOM;
     private final ZookeeperUtil zkUtils = SingletonFactory.getInstance(ZookeeperUtil.class);
     private static final String SERVICE_PREFIX = RpcConstants.SERVICE_PREFIX;
 
-    @Autowired
-    RpcConfig rpcConfig;
+    private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
 
     private LoadBalance getLoadBalance() {
         return SingletonFactory.getInstance(loadBalanceType.getClazz());

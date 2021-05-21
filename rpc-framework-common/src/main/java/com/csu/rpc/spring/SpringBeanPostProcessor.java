@@ -19,8 +19,7 @@ import java.lang.reflect.Field;
 @Component
 public class SpringBeanPostProcessor implements BeanPostProcessor {
 
-    @Autowired
-    ServerProvider serverProvider;
+    ServerProvider serverProvider = ServerProvider.INSTANCE;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -33,7 +32,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
 
             RpcService serviceAnnotation = bean.getClass().getAnnotation(RpcService.class);
             String group = serviceAnnotation.group();
-            String version = serviceAnnotation.version();
+            Byte version = serviceAnnotation.version();
             String serviceName = serviceAnnotation.serviceName();
 
             RpcServiceInfo serviceInfo = new RpcServiceInfo(serviceName, group, version);

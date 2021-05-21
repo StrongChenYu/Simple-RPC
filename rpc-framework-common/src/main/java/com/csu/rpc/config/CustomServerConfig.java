@@ -1,4 +1,4 @@
-package com.csu.rpc.spring;
+package com.csu.rpc.config;
 
 
 import lombok.Getter;

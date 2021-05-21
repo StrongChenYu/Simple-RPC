@@ -39,7 +39,7 @@ public class RpcRequest extends Packet {
     /**
      * 版本控制
      */
-    private String version;
+    private Byte version;
 
     /**
      * 服务所属的组

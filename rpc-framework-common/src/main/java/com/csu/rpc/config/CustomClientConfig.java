@@ -1,4 +1,4 @@
-package com.csu.rpc.spring;
+package com.csu.rpc.config;
 
 
 import lombok.Getter;
@@ -60,6 +60,7 @@ public class CustomClientConfig {
      * 2. gzip (default)
      */
     String compressMode;
+
 
     @Override
     public String toString() {

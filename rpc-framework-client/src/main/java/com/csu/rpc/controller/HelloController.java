@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class HelloController {
 
-    @RpcReference
+    @RpcReference(version = 2)
     HelloService helloService;
 
     public void test() {

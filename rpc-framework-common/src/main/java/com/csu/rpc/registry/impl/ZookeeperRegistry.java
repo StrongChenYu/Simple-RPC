@@ -1,12 +1,10 @@
 package com.csu.rpc.registry.impl;
 
 import com.csu.rpc.constant.RpcConstants;
-import com.csu.rpc.spring.RpcConfig;
+import com.csu.rpc.config.RpcConfig;
 import com.csu.rpc.utils.ZookeeperUtil;
 import com.csu.rpc.registry.ServiceRegistry;
 import com.csu.rpc.utils.SingletonFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
@@ -17,13 +15,11 @@ import java.net.InetSocketAddress;
  * @Author Chen Yu
  * @Date 2021/3/17 19:58
  */
-@Component
 public class ZookeeperRegistry implements ServiceRegistry {
 
     private static final String PREFIX = RpcConstants.SERVICE_PREFIX;
 
-    @Autowired
-    RpcConfig rpcConfig;
+    private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
 
     @Override
     public void registerService(String rpcServiceName, InetSocketAddress inetSocketAddress) {

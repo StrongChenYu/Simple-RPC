@@ -9,6 +9,11 @@ import io.netty.handler.codec.MessageToByteEncoder;
 public class NettyKryoEncoder extends MessageToByteEncoder<Packet> {
 
     public final static NettyKryoEncoder INSTANCE = new NettyKryoEncoder();
+    private Byte version;
+
+//    public NettyKryoEncoder(Byte version) {
+//        this.version = version;
+//    }
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet msg, ByteBuf out) throws Exception {

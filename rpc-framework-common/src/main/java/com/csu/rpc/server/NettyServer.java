@@ -1,11 +1,9 @@
 package com.csu.rpc.server;
 
-import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
 import com.csu.rpc.server.handler.RpcRequestPacketHandler;
-import com.csu.rpc.server.process.ServerProvider;
-import com.csu.rpc.spring.RpcConfig;
+import com.csu.rpc.config.RpcConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -17,20 +15,15 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.concurrent.CountDownLatch;
 
 @Component
 @Slf4j
 public class NettyServer {
 
     private final ServerBootstrap bootstrap = new ServerBootstrap();
-
-    @Autowired
-    RpcConfig rpcConfig;
+    private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
 
     public NettyServer() {
 

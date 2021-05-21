@@ -1,6 +1,5 @@
 package com.csu.rpc.annotation;
 
-import com.csu.rpc.spring.RpcConfig;
 import com.csu.rpc.spring.RpcScannerRegister;
 import org.springframework.context.annotation.Import;
 

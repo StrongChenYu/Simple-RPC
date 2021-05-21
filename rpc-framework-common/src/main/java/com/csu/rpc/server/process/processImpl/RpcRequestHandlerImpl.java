@@ -17,11 +17,9 @@ import java.lang.reflect.Method;
  * @Date 2021/3/23 20:34
  */
 @Slf4j
-@Component
 public class RpcRequestHandlerImpl implements RpcRequestHandler {
 
-    @Autowired
-    ServerProvider serverProvider;
+    ServerProvider serverProvider = ServerProvider.INSTANCE;
 
     @Override
     public RpcResponse handleRpcRequest(RpcRequest request) {

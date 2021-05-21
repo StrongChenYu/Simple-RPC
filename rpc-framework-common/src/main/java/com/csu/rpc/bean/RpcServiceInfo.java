@@ -16,7 +16,7 @@ import java.util.Objects;
 public class RpcServiceInfo {
     String serviceName;
     String group;
-    String version;
+    Byte version;
 
     public RpcServiceInfo() {
         this.group = RpcConstants.DEFAULT_GROUP;
