@@ -2,14 +2,11 @@ package com.csu.rpc.spring;
 
 
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
+import lombok.Setter;
 
 
-@Component
-@PropertySource("classpath:server.properties")
 @Getter
+@Setter
 public class CustomServerConfig {
 
 
@@ -18,16 +15,14 @@ public class CustomServerConfig {
      * rpc.server.ip
      * default: 127.0.0.1
      */
-    @Value("${rpc.server.ip:127.0.0.1}")
-    String serverIP;
+    String ip;
 
     /**
      * 服务器端口号
      * rpc.server.port
      * default:8000
      */
-    @Value("${rpc.server.port:8000}")
-    Integer serverPort;
+    Integer port;
 
     /**
      * 服务器使用的注册中心
@@ -35,8 +30,7 @@ public class CustomServerConfig {
      * 1. zookeeper(default)
      * 2. redis
      */
-    @Value("${rpc.server.registerCentral:zookeeper}")
-    String serverRegisterCentral;
+    String registerCentral;
 
 
     /**
@@ -45,7 +39,6 @@ public class CustomServerConfig {
      * rpc.server.zookeeperAddress
      * 如果配置为zookeeper, 必须配置项
      */
-    @Value("${rpc.server.zookeeperAddress}")
     String zookeeperAddress;
 
     /**
@@ -54,7 +47,6 @@ public class CustomServerConfig {
      * rpc.server.redisAddress
      * 如果配置为redis，必须配置项
      */
-    @Value("${rpc.server.redisAddress}")
     String redisAddress;
 
     /**
@@ -62,14 +54,34 @@ public class CustomServerConfig {
      * rpc.server.codeMode
      * 1.kryo(default)
      */
-    @Value("${rpc.server.codeMode:kryo}")
     String codecMode;
 
     /**
-     * 客户端的编码解码方式
+     * 服务端的压缩解压缩方式
      * rpc.server.compressMode
      * 2. gzip (default)
      */
-    @Value("${rpc.server.compressMode:gzip}")
     String compressMode;
+
+
+    public String getZookeeperIP() {
+        return zookeeperAddress.split(":")[0];
+    }
+
+    public int getZookeeperPort() {
+        return Integer.parseInt(zookeeperAddress.split(":")[1]);
+    }
+
+    @Override
+    public String toString() {
+        return "CustomServerConfig{" +
+                "ip='" + ip + '\'' +
+                ", port=" + port +
+                ", registerCentral='" + registerCentral + '\'' +
+                ", zookeeperAddress='" + zookeeperAddress + '\'' +
+                ", redisAddress='" + redisAddress + '\'' +
+                ", codecMode='" + codecMode + '\'' +
+                ", compressMode='" + compressMode + '\'' +
+                '}';
+    }
 }

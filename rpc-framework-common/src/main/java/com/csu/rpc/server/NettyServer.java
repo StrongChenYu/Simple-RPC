@@ -3,9 +3,9 @@ package com.csu.rpc.server;
 import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
-import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.server.handler.RpcRequestPacketHandler;
 import com.csu.rpc.server.process.ServerProvider;
+import com.csu.rpc.spring.RpcConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -17,6 +17,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -27,9 +28,9 @@ import java.util.concurrent.CountDownLatch;
 public class NettyServer {
 
     private final ServerBootstrap bootstrap = new ServerBootstrap();
-    private final Integer port = RpcConstants.DEFAULT_PORT;
-    private final ServerProvider serverProvider = ServerProvider.INSTANCE;
 
+    @Autowired
+    RpcConfig rpcConfig;
 
     public NettyServer() {
 
@@ -56,27 +57,27 @@ public class NettyServer {
      *
      * test最后会强制关闭jvm
      * 所以需要使用CountDownLatch等待服务器关闭
-     * @param countDownLatch
      */
-    public void start(CountDownLatch countDownLatch) {
-        try {
-            ChannelFuture f = bootstrap.bind(port).sync();
-            f.addListener(future -> {
-                if (future.isSuccess()) {
-                    Thread.sleep(1000);
-                    System.out.println(new Date() + "端口[" + port + "]绑定成功!");
-                    countDownLatch.countDown();
-                } else {
-                    System.err.println(new Date() + "端口[" + port + "]绑定失败!");
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public void start(CountDownLatch countDownLatch) {
+//        try {
+//            ChannelFuture f = bootstrap.bind(port).sync();
+//            f.addListener(future -> {
+//                if (future.isSuccess()) {
+//                    Thread.sleep(1000);
+//                    System.out.println(new Date() + "端口[" + port + "]绑定成功!");
+//                    countDownLatch.countDown();
+//                } else {
+//                    System.err.println(new Date() + "端口[" + port + "]绑定失败!");
+//                }
+//            });
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public void start(){
+        int port = rpcConfig.getServerConfig().getPort();
         try {
             ChannelFuture f = bootstrap.bind(port).sync();
             f.addListener(future -> {
@@ -89,19 +90,6 @@ public class NettyServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 这个类主要负责
-     * 将这个服务器里面所有提供服务的类注册进来
-     */
-    public void scanAddService(Object serviceImpl) {
-        /**
-         * ???????
-         * 这里只传一个class可以调用吗???????
-         */
-        RpcServiceInfo rpcServiceInfo = new RpcServiceInfo();
-        serverProvider.publishServer(serviceImpl, rpcServiceInfo);
     }
 
 }

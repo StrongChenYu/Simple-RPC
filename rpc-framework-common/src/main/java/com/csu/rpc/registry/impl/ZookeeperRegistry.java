@@ -1,9 +1,12 @@
 package com.csu.rpc.registry.impl;
 
 import com.csu.rpc.constant.RpcConstants;
+import com.csu.rpc.spring.RpcConfig;
 import com.csu.rpc.utils.ZookeeperUtil;
 import com.csu.rpc.registry.ServiceRegistry;
 import com.csu.rpc.utils.SingletonFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
@@ -14,10 +17,13 @@ import java.net.InetSocketAddress;
  * @Author Chen Yu
  * @Date 2021/3/17 19:58
  */
+@Component
 public class ZookeeperRegistry implements ServiceRegistry {
 
-    public static final String ADDRESS = RpcConstants.ZOOKEEPER_ADDRESS;
     private static final String PREFIX = RpcConstants.SERVICE_PREFIX;
+
+    @Autowired
+    RpcConfig rpcConfig;
 
     @Override
     public void registerService(String rpcServiceName, InetSocketAddress inetSocketAddress) {
@@ -34,7 +40,7 @@ public class ZookeeperRegistry implements ServiceRegistry {
          * 如果存在就在原有的内容后面加一个节点
          */
         String register = PREFIX + rpcServiceName + inetSocketAddress.toString();
-        zkUtil.createPersistentNode(ADDRESS, register, null);
+        zkUtil.createPersistentNode(rpcConfig.getServerConfig().getZookeeperAddress(), register, null);
     }
 
     @Override
@@ -46,6 +52,6 @@ public class ZookeeperRegistry implements ServiceRegistry {
          * 如果存在就删除掉
          */
         String register = PREFIX + rpcServiceName + inetSocketAddress.toString();
-        zkUtil.deleteNode(ADDRESS, register);
+        zkUtil.deleteNode(rpcConfig.getServerConfig().getZookeeperAddress(), register);
     }
 }

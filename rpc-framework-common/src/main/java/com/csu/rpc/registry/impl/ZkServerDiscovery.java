@@ -5,12 +5,14 @@ import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.enums.LoadBalanceTypeEnum;
 import com.csu.rpc.registry.LoadBalance;
 import com.csu.rpc.registry.ServerDiscovery;
+import com.csu.rpc.spring.RpcConfig;
 import com.csu.rpc.utils.SingletonFactory;
 import com.csu.rpc.utils.ZookeeperUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,12 +20,15 @@ import java.util.List;
  * @Date 2021/4/7 19:52
  */
 @Slf4j
+@Component
 public class ZkServerDiscovery implements ServerDiscovery {
 
     private final LoadBalanceTypeEnum loadBalanceType = LoadBalanceTypeEnum.RANDOM;
     private final ZookeeperUtil zkUtils = SingletonFactory.getInstance(ZookeeperUtil.class);
-    public static final String ZOOKEEPER_ADDRESS = RpcConstants.ZOOKEEPER_ADDRESS;;
     private static final String SERVICE_PREFIX = RpcConstants.SERVICE_PREFIX;
+
+    @Autowired
+    RpcConfig rpcConfig;
 
     private LoadBalance getLoadBalance() {
         return SingletonFactory.getInstance(loadBalanceType.getClazz());
@@ -34,7 +39,8 @@ public class ZkServerDiscovery implements ServerDiscovery {
         /**
          * 获取拥有该服务的所有服务器
          */
-        List<String> children = zkUtils.getChildren(ZOOKEEPER_ADDRESS, SERVICE_PREFIX + serviceInfo.toRegisterRpcServiceName());
+        String zookeeperAddress = rpcConfig.getClientConfig().getZookeeperAddress();
+        List<String> children = zkUtils.getChildren(zookeeperAddress, SERVICE_PREFIX + serviceInfo.toRegisterRpcServiceName());
 
         if (children == null || children.size() == 0) {
             log.error("Zookeeper don't have any information about service {}", serviceInfo.getServiceName());

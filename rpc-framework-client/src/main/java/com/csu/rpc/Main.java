@@ -8,8 +8,11 @@ import com.csu.rpc.service.HelloService;
 import com.csu.rpc.spring.CustomClientConfig;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.util.Properties;
 
 /**
  * @Author Chen Yu
@@ -18,10 +21,11 @@ import java.lang.reflect.Field;
 @RpcScan(basePackage = {"com.csu.rpc"})
 public class Main {
     public static void main(String[] args) throws NoSuchFieldException {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Main.class);
+        //AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Main.class);
 //        HelloController controller = context.getBean(HelloController.class);
 //        controller.test();
-        CustomClientConfig bean = context.getBean(CustomClientConfig.class);
-        System.out.println(bean);
+//        CustomClientConfig bean = context.getBean(CustomClientConfig.class);
+//        System.out.println(bean);
+
     }
 }

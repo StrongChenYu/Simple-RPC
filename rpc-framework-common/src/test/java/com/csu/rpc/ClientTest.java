@@ -12,28 +12,7 @@ public class ClientTest {
 
     @Test
     public void serverStartTest() throws InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(2);
 
-        Thread server = new Thread(() -> {
-            NettyServer nettyServer = new NettyServer();
-            nettyServer.start(countDownLatch);
-        });
-
-        Thread client = new Thread(() -> {
-            try {
-                sendMessageTest();
-                countDownLatch.countDown();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
-        server.start();
-        client.start();
-
-        countDownLatch.await();
-
-        Thread.sleep(1000);
     }
 
     @Test

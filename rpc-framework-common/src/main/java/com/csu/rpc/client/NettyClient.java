@@ -9,6 +9,7 @@ import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.registry.ServerDiscovery;
+import com.csu.rpc.spring.RpcConfig;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -18,6 +19,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
@@ -32,8 +34,9 @@ public class NettyClient {
     private final ServerDiscovery serverDiscovery = ServerDiscovery.INSTANCE;
     private final UnProcessRequestsManager unProcessRequestsManager = SingletonFactory.getInstance(UnProcessRequestsManager.class);
     private final EventLoopGroup eventLoopGroup;
-    private final static Integer MAX_RETRY = RpcConstants.MAX_RETRY;
 
+    @Autowired
+    RpcConfig rpcConfig;
 
     public NettyClient() {
         eventLoopGroup = new NioEventLoopGroup();
@@ -60,16 +63,17 @@ public class NettyClient {
     }
 
     private void connect(Bootstrap bootstrap, InetSocketAddress address, int retry, CompletableFuture<Channel> connectFuture) {
+        int max_retry = rpcConfig.getClientConfig().getMaxRetry();
         bootstrap.connect(address).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 log.info("Client connected server {} successful!", address.toString());
                 connectFuture.complete(future.channel());
             } else if (retry == 0) {
-                log.error("Client failed in {} attempts to connect and gave up to connect server {}", MAX_RETRY, address);
+                log.error("Client failed in {} attempts to connect and gave up to connect server {}", max_retry, address);
                 connectFuture.completeExceptionally(future.cause());
             } else {
                 // 第几次重连
-                int order = (MAX_RETRY - retry) + 1;
+                int order = (max_retry - retry) + 1;
                 // 本次重连的间隔
                 int delay = 1 << order;
                 log.warn("Client failed to connect server and retry");

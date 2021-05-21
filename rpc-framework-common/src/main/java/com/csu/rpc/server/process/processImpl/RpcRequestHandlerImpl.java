@@ -6,6 +6,8 @@ import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.server.process.RpcRequestHandler;
 import com.csu.rpc.server.process.ServerProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,9 +17,11 @@ import java.lang.reflect.Method;
  * @Date 2021/3/23 20:34
  */
 @Slf4j
+@Component
 public class RpcRequestHandlerImpl implements RpcRequestHandler {
 
-    private final ServerProvider serverProvider = ServerProvider.INSTANCE;
+    @Autowired
+    ServerProvider serverProvider;
 
     @Override
     public RpcResponse handleRpcRequest(RpcRequest request) {

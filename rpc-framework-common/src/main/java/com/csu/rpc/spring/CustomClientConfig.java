@@ -2,12 +2,7 @@ package com.csu.rpc.spring;
 
 
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
-@Component
-@PropertySource("classpath:client.properties")
 @Getter
 public class CustomClientConfig {
 
@@ -17,7 +12,6 @@ public class CustomClientConfig {
      * rpc.client.maxRetry
      * 3(default)
      */
-    @Value("${rpc.client.maxRetry:3}")
     Integer maxRetry;
 
 
@@ -27,8 +21,7 @@ public class CustomClientConfig {
      * 1.zookeeper(default)
      * 2.redis
      */
-    @Value("${rpc.client.registerCentral:zookeeper}")
-    String clientRegisterCentral;
+    String registerCentral;
 
     /**
      * 客户端选择服务端的算法
@@ -36,8 +29,7 @@ public class CustomClientConfig {
      * 1.random(default)
      * 2....
      */
-    @Value("${rpc.client.selectAddressAlgorithm:random}")
-    String remoteAddressSelectAlgorithm;
+    String selectAddressAlgorithm;
 
 
     /**
@@ -45,7 +37,6 @@ public class CustomClientConfig {
      * rpc.client.zookeeperAddress
      * 如果使用zookeeper必须配置
      */
-    @Value("${rpc.client.zookeeperAddress}")
     String zookeeperAddress;
 
     /**
@@ -53,17 +44,33 @@ public class CustomClientConfig {
      * rpc.client.redisAddress
      * 如果使用redis必须配置
      */
-    @Value("${rpc.client.redisAddress}")
     String redisAddress;
+
+
+    /**
+     * 客户端的编码解码方式
+     * rpc.server.codeMode
+     * 1.kryo(default)
+     */
+    String codecMode;
+
+    /**
+     * 客户端的压缩解压缩方式
+     * rpc.server.compressMode
+     * 2. gzip (default)
+     */
+    String compressMode;
 
     @Override
     public String toString() {
         return "CustomClientConfig{" +
                 "maxRetry=" + maxRetry +
-                ", clientRegisterCentral='" + clientRegisterCentral + '\'' +
-                ", remoteAddressSelectAlgorithm='" + remoteAddressSelectAlgorithm + '\'' +
+                ", registerCentral='" + registerCentral + '\'' +
+                ", selectAddressAlgorithm='" + selectAddressAlgorithm + '\'' +
                 ", zookeeperAddress='" + zookeeperAddress + '\'' +
                 ", redisAddress='" + redisAddress + '\'' +
+                ", codecMode='" + codecMode + '\'' +
+                ", compressMode='" + compressMode + '\'' +
                 '}';
     }
 }
