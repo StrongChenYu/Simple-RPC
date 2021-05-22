@@ -11,9 +11,24 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 @RpcScan(basePackage = {"com.csu.rpc"})
 public class ClientMain {
+
+    private static final Integer numThread = 1000;
+
     public static void main(String[] args) throws NoSuchFieldException {
+
+        Thread[] threads = new Thread[numThread];
+
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientMain.class);
-        HelloController controller = context.getBean(HelloController.class);
-        controller.test();
+
+        for (int i = 0; i < numThread; i++) {
+            threads[i] = new Thread(() -> {
+                HelloController controller = context.getBean(HelloController.class);
+                controller.test();
+            });
+        }
+
+        for (int i = 0; i < numThread; i++) {
+            threads[i].start();
+        }
     }
 }

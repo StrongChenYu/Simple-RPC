@@ -4,6 +4,7 @@ import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.client.NettyClient;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
+import com.csu.rpc.utils.SingletonFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
@@ -38,7 +39,7 @@ public class RpcClientProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        NettyClient nettyClient = new NettyClient();
+        NettyClient nettyClient = SingletonFactory.getInstance(NettyClient.class);
 
         String serviceName = serviceInfo.getServiceName();
         //服务名默认为method.getDeclaringClass().getSimpleName()

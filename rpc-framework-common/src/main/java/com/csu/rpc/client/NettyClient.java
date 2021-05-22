@@ -9,6 +9,7 @@ import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.registry.ServerDiscovery;
 import com.csu.rpc.config.RpcConfig;
+import com.csu.rpc.registry.impl.ZkServerDiscovery;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -18,24 +19,21 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-@Component
 @Slf4j
 public class NettyClient {
     private final Bootstrap bootstrap;
-    private final ServerDiscovery serverDiscovery = ServerDiscovery.INSTANCE;
-    private final UnProcessRequestsManager unProcessRequestsManager = SingletonFactory.getInstance(UnProcessRequestsManager.class);
+    private final ServerDiscovery serverDiscovery;
+    private final UnProcessRequestsManager unProcessRequestsManager;
     private final EventLoopGroup eventLoopGroup;
-
+    private final ChannelProvider channelProvider;
     private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
 
-    public NettyClient() {
+    private NettyClient() {
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
 
@@ -50,6 +48,12 @@ public class NettyClient {
                         ch.pipeline().addLast(new NettyKryoEncoder());
                     }
                 });
+
+        unProcessRequestsManager = SingletonFactory.getInstance(UnProcessRequestsManager.class);
+
+        // TODO: 2021/5/22 根据配置去自定义
+        serverDiscovery = SingletonFactory.getInstance(ZkServerDiscovery.class);
+        channelProvider = SingletonFactory.getInstance(ChannelProvider.class);
     }
 
 
@@ -90,25 +94,21 @@ public class NettyClient {
         /**
          * 连接服务端
          */
-        Channel futureChannel = null;
-        try {
-            futureChannel = doConnect(address);
-        } catch (InterruptedException | ExecutionException e) {
-            //连接不成功就直接关掉
-            eventLoopGroup.shutdownGracefully();
-            e.printStackTrace();
-        }
+        Channel futureChannel = getChannel(address);
 
         /**
          * 如果连接成功就发送请求
          */
-        if (futureChannel != null) {
+        if (futureChannel.isActive()) {
             futureChannel.writeAndFlush(rpcRequest).addListener(future -> {
                 if (future.isSuccess()) {
                     unProcessRequestsManager.addUnProcessRequest(rpcRequest.getRequestId(), responseFuture);
                     log.info("Client send rpc request packet {}", rpcRequest.toString());
                 }
             });
+        } else {
+            log.info("unhandled state in channel!");
+            return RpcResponse.CLIENT_ERROR(rpcRequest.getRequestId());
         }
 
         try {
@@ -116,13 +116,13 @@ public class NettyClient {
             return responseFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             log.error("Response Packet receive fail !");
-
             e.printStackTrace();
-            eventLoopGroup.shutdownGracefully();
+
+            return RpcResponse.CLIENT_ERROR(rpcRequest.getRequestId());
         }
 
-        return null;
     }
+
 
     /**
      * 将rpc request包中的信息转化成
@@ -133,5 +133,28 @@ public class NettyClient {
     private RpcServiceInfo getRpcServiceInfo(RpcRequest rpcRequest) {
         RpcServiceInfo serviceInfo = new RpcServiceInfo(rpcRequest.getServiceName(), rpcRequest.getGroup(), rpcRequest.getVersion());
         return serviceInfo;
+    }
+
+    /**
+     * 根据provider中去获取channel
+     * 实现复用
+     * @param address
+     * @return
+     */
+    private Channel getChannel(InetSocketAddress address) {
+        Channel channel = channelProvider.getChannel(address);
+        if (channel != null) {
+            return channel;
+        }
+
+        try {
+            channel = doConnect(address);
+            channelProvider.putChannel(address, channel);
+        } catch (ExecutionException | InterruptedException e) {
+            log.info("error occur in netty connection establish!");
+            e.printStackTrace();
+        }
+
+        return channel;
     }
 }

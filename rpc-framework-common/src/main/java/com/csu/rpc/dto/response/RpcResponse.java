@@ -64,6 +64,14 @@ public class RpcResponse extends Packet {
                 RpcResponseMessageEnum.INVOKE_FAIL.getMessage());
     }
 
+    public static RpcResponse CLIENT_ERROR(String requestId) {
+        return ERROR(
+                requestId,
+                RpcResponseMessageEnum.CLIENT_ERROR.getCode(),
+                RpcResponseMessageEnum.CLIENT_ERROR.getMessage()
+        );
+    }
+
     @Override
     public Byte serializerType() {
         return Command.RPC_RESPONSE_PACKET;

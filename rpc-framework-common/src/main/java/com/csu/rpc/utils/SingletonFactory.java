@@ -1,5 +1,6 @@
 package com.csu.rpc.utils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,9 @@ public class SingletonFactory {
                 try {
                     //使用instance的无参构造器，然后用这个构造器构造一个实例
                     //System.out.println("创建对象：" + clazz.getName());
-                    instance = clazz.getDeclaredConstructor().newInstance();
+                    Constructor<T> declaredConstructor = clazz.getDeclaredConstructor();
+                    declaredConstructor.setAccessible(true);
+                    instance = declaredConstructor.newInstance();
                     OBJECT_MAP.put(key, instance);
 
                 } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {

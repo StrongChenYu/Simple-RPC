@@ -11,7 +11,6 @@ import java.net.InetSocketAddress;
  */
 public interface ServerDiscovery {
 
-    ServerDiscovery INSTANCE = new ZkServerDiscovery();
 
     /**
      * 根据rpc的serviceName去zookeeper或者其他地方找到服务器地址

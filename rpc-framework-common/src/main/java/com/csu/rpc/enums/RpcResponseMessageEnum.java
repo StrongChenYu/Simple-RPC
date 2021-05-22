@@ -15,7 +15,8 @@ public enum RpcResponseMessageEnum {
 
     SUCCESS(200, "Remote procedure call success!"),
     SERVICE_NOT_FIND(300, "Remote Service not find in this server!"),
-    INVOKE_FAIL(400, "Some unexpected error occur in method call!");
+    INVOKE_FAIL(400, "Some unexpected error occur in method call!"),
+    CLIENT_ERROR(500, "Error occur in Client!");
 
     private final int code;
     private final String message;
