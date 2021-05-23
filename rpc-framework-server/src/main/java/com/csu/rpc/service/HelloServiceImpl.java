@@ -9,7 +9,7 @@ import com.csu.rpc.annotation.RpcService;
 @RpcService(version = 2)
 public class HelloServiceImpl implements HelloService{
     @Override
-    public String sayHello() {
-        return "hello world!";
+    public int sayHello() {
+        return 1;
     }
 }

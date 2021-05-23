@@ -5,5 +5,5 @@ package com.csu.rpc.service;
  * @Date 2021/3/22 20:22
  */
 public interface HelloService {
-    String sayHello();
+    int sayHello();
 }

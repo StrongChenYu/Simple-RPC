@@ -9,7 +9,10 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ZookeeperUtil {
 
+    private final Map<String, List<String>> cache = new HashMap<>();
     
     public CuratorFramework getZkClient(String zkAddress) {
         RetryPolicy policy = new ExponentialBackoffRetry(1000, 3);
@@ -130,11 +134,23 @@ public class ZookeeperUtil {
      * @param path
      * @return
      */
-    public List<String> getChildren(String address, String path) {
+    public synchronized List<String> getChildren(String address, String path) {
+
+        /**
+         * 这里加一层缓存
+         * 防止重复请求
+         * 将结果缓存到客户端
+         */
+        if (cache.containsKey(path)) {
+            return cache.get(path);
+        }
+
         try (CuratorFramework client = getZkClient(address)){
             if (client.checkExists().forPath(path) != null) {
                 //节点存在
                 List<String> strings = client.getChildren().forPath(path);
+                //创建缓存，防止防止重复访问zookeeper
+                cache.put(path, strings);
                 return strings;
             }
         } catch (Exception e) {

@@ -1,7 +1,12 @@
 package com.csu.rpc;
 
-public class SerializerTest {
+import com.csu.rpc.dto.request.RpcRequest;
+import com.csu.rpc.dto.serializer.impl.KryoSerializer;
+import org.junit.Assert;
+import org.junit.Test;
 
+public class SerializerTest {
+//
 //    @Test
 //    public void serializeTest() throws SerializeException {
 //        KryoSerializer serializer = KryoSerializer.INSTANCE;

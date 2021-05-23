@@ -14,7 +14,7 @@ public class HelloController {
     @RpcReference(version = 2)
     HelloService helloService;
 
-    public void test() {
-        helloService.sayHello();
+    public int test() {
+        return helloService.sayHello();
     }
 }

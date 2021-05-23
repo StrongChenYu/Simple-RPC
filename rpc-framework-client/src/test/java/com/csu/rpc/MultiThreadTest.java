@@ -1,22 +1,18 @@
 package com.csu.rpc;
 
-import com.csu.rpc.annotation.RpcScan;
-import com.csu.rpc.config.CustomClientConfig;
 import com.csu.rpc.controller.HelloController;
+import org.junit.Assert;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.concurrent.CountDownLatch;
 
-/**
- * @Author Chen Yu
- * @Date 2021/3/25 20:07
- */
-@RpcScan(basePackage = {"com.csu.rpc"})
-public class ClientMain {
+public class MultiThreadTest {
 
-    private static final Integer numThread = 2;
+    private static final Integer numThread = 2000;
 
-    public static void main(String[] args) throws NoSuchFieldException, InterruptedException {
+    @Test
+    public void testMultiThread() throws InterruptedException {
 
         Thread[] threads = new Thread[numThread];
         CountDownLatch countDownLatch = new CountDownLatch(numThread);
@@ -25,11 +21,10 @@ public class ClientMain {
         for (int i = 0; i < numThread; i++) {
             threads[i] = new Thread(() -> {
                 HelloController controller = context.getBean(HelloController.class);
-                controller.test();
+                Assert.assertEquals(1, controller.test());
                 countDownLatch.countDown();
             });
         }
-
         for (int i = 0; i < numThread; i++) {
             threads[i].start();
         }

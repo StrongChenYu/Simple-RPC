@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author Chen Yu
@@ -29,19 +27,10 @@ public class ZkServerDiscovery implements ServerDiscovery {
     private LoadBalance getLoadBalance() {
         return SingletonFactory.getInstance(loadBalanceType.getClazz());
     }
-    private final Map<RpcServiceInfo, InetSocketAddress> addressMap = new ConcurrentHashMap<>();
 
 
     @Override
     public InetSocketAddress lookupServer(RpcServiceInfo serviceInfo) {
-        /**
-         * 先从缓存中读取
-         */
-        InetSocketAddress address = getAddressCache(serviceInfo);
-        if (address != null) {
-            log.error("get server address using cache not send request to zookeeper!");
-            return address;
-        }
 
         /**
          * 获取拥有该服务的所有服务器
@@ -60,17 +49,8 @@ public class ZkServerDiscovery implements ServerDiscovery {
         //log
         log.info("Client choose server: {}", serverPath);
         String[] splits = serverPath.split(":");
-        address = new InetSocketAddress(splits[0], Integer.parseInt(splits[1]));
-        putOrUpdateCache(serviceInfo, address);
-
+        InetSocketAddress address = new InetSocketAddress(splits[0], Integer.parseInt(splits[1]));
         return address;
     }
 
-    public void putOrUpdateCache(RpcServiceInfo serviceInfo, InetSocketAddress address) {
-        addressMap.put(serviceInfo, address);
-    }
-
-    public InetSocketAddress getAddressCache(RpcServiceInfo serviceInfo) {
-        return addressMap.get(serviceInfo);
-    }
 }
