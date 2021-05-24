@@ -12,8 +12,6 @@ import java.net.InetSocketAddress;
  */
 public interface ServiceRegistry {
 
-    ServiceRegistry INSTANCE = new ZookeeperRegistry();
-
     /**
      * 注册服务
      * @param rpcServiceName

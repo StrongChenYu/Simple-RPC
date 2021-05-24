@@ -2,9 +2,12 @@ package com.csu.rpc.server.process.processImpl;
 
 
 import com.csu.rpc.bean.RpcServiceInfo;
+import com.csu.rpc.config.ServerRpcConfig;
+import com.csu.rpc.registry.RegistryContext;
 import com.csu.rpc.registry.ServiceRegistry;
 import com.csu.rpc.server.process.ServerProvider;
 import com.csu.rpc.config.RpcConfig;
+import com.csu.rpc.utils.SingletonFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -16,10 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServerProviderImpl implements ServerProvider {
 
-    ServiceRegistry registry = ServiceRegistry.INSTANCE;
+    ServiceRegistry registry = SingletonFactory.getInstance(RegistryContext.class);
     Map<RpcServiceInfo, Object> serviceMap = new ConcurrentHashMap<>();
 
-    private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
+    private final ServerRpcConfig rpcConfig = SingletonFactory.getInstance(ServerRpcConfig.class);
 
     @Override
     public void publishServer(Object service, RpcServiceInfo serviceInfo) {
@@ -37,8 +40,8 @@ public class ServerProviderImpl implements ServerProvider {
 
 
         //注册到注册中心中
-        registry.registerService(registerName, new InetSocketAddress(rpcConfig.getServerConfig().getIp(),
-                rpcConfig.getServerConfig().getPort()));
+        registry.registerService(registerName, new InetSocketAddress(rpcConfig.getConfigBean().getIp(),
+                rpcConfig.getConfigBean().getPort()));
         //注册到服务端，以便以后能找到
         serviceMap.put(serviceInfo, service);
     }

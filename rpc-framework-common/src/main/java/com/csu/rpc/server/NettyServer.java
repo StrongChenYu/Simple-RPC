@@ -1,9 +1,12 @@
 package com.csu.rpc.server;
 
+import com.csu.rpc.bean.ConfigBean;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
+import com.csu.rpc.config.ServerRpcConfig;
 import com.csu.rpc.server.handler.RpcRequestPacketHandler;
 import com.csu.rpc.config.RpcConfig;
+import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -23,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class NettyServer {
 
     private final ServerBootstrap bootstrap = new ServerBootstrap();
-    private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
+    private final ServerRpcConfig rpcConfig = SingletonFactory.getInstance(ServerRpcConfig.class);
 
     public NettyServer() {
 
@@ -70,7 +73,7 @@ public class NettyServer {
 //    }
 
     public void start(){
-        int port = rpcConfig.getServerConfig().getPort();
+        int port = rpcConfig.getConfigBean().getPort();
         try {
             ChannelFuture f = bootstrap.bind(port).sync();
             f.addListener(future -> {

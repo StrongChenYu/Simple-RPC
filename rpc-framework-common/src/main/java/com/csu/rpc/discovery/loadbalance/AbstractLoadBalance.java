@@ -1,4 +1,6 @@
-package com.csu.rpc.registry;
+package com.csu.rpc.discovery.loadbalance;
+
+import com.csu.rpc.discovery.loadbalance.LoadBalance;
 
 import java.util.List;
 
@@ -6,7 +8,7 @@ import java.util.List;
  * @Author Chen Yu
  * @Date 2021/4/7 19:38
  */
-public abstract class AbstractLoadBalance implements LoadBalance{
+public abstract class AbstractLoadBalance implements LoadBalance {
 
     @Override
     public String selectServer(List<String> serverList, String serviceName) {

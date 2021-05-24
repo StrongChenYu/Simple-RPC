@@ -5,11 +5,13 @@ import com.csu.rpc.client.handler.NettyClientHandler;
 import com.csu.rpc.client.handler.UnProcessRequestsManager;
 import com.csu.rpc.coder.NettyKryoDecoder;
 import com.csu.rpc.coder.NettyKryoEncoder;
+import com.csu.rpc.config.ClientRpcConfig;
+import com.csu.rpc.discovery.DiscoveryContext;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
-import com.csu.rpc.registry.ServerDiscovery;
+import com.csu.rpc.discovery.ServerDiscovery;
 import com.csu.rpc.config.RpcConfig;
-import com.csu.rpc.registry.impl.ZkServerDiscovery;
+import com.csu.rpc.discovery.ZkServerDiscovery;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -31,7 +33,7 @@ public class NettyClient {
     private final UnProcessRequestsManager unProcessRequestsManager;
     private final EventLoopGroup eventLoopGroup;
     private final ChannelProvider channelProvider;
-    private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
+    private final ClientRpcConfig rpcConfig = SingletonFactory.getInstance(ClientRpcConfig.class);
 
     private NettyClient() {
         eventLoopGroup = new NioEventLoopGroup();
@@ -50,9 +52,7 @@ public class NettyClient {
                 });
 
         unProcessRequestsManager = SingletonFactory.getInstance(UnProcessRequestsManager.class);
-
-        // TODO: 2021/5/22 根据配置去自定义
-        serverDiscovery = SingletonFactory.getInstance(ZkServerDiscovery.class);
+        serverDiscovery = SingletonFactory.getInstance(DiscoveryContext.class);
         channelProvider = SingletonFactory.getInstance(ChannelProvider.class);
     }
 
@@ -64,7 +64,7 @@ public class NettyClient {
     }
 
     private void connect(Bootstrap bootstrap, InetSocketAddress address, int retry, CompletableFuture<Channel> connectFuture) {
-        int max_retry = rpcConfig.getClientConfig().getMaxRetry();
+        int max_retry = rpcConfig.getConfigBean().getMaxRetry();
         bootstrap.connect(address).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 log.info("Client connected server {} successful!", address.toString());

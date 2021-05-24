@@ -1,9 +1,11 @@
 package com.csu.rpc.dto;
 
 import com.csu.rpc.dto.compress.Compress;
+import com.csu.rpc.dto.compress.CompressContext;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.serializer.Serializer;
 import com.csu.rpc.constant.RpcConstants;
+import com.csu.rpc.dto.serializer.SerializerContext;
 import com.csu.rpc.enums.CompressTypeEnum;
 import com.csu.rpc.enums.PacketTypeEnum;
 import com.csu.rpc.enums.SerializerTypeEnum;
@@ -16,33 +18,22 @@ import lombok.AllArgsConstructor;
 public class PacketCodeC {
 
     public static PacketCodeC PACKETCODEC = new PacketCodeC();
-
     private final SerializerTypeEnum serializerType = SerializerTypeEnum.KRYO;
     private final CompressTypeEnum compressType = CompressTypeEnum.GZIP;
+
 
     private Class<? extends Packet> getPacketType(Byte type) {
         return PacketTypeEnum.getPacketClassByCode(type);
     }
 
     private Serializer getSerializerAlgorithm(Byte type) {
-        Class<? extends Serializer> serializerClass = SerializerTypeEnum.getSerializerClassByCode(type);
-
-        if (serializerClass == null) {
-            throw new RuntimeException("SerializerClass can't be null!");
-        }
-
-        return SingletonFactory.getInstance(serializerClass);
+        return SingletonFactory.getInstance(SerializerContext.class);
     }
 
     private Compress getCompressAlgorithm(Byte type) {
-        Class<? extends Compress> compressClass = CompressTypeEnum.getCompressClassByCode(type);
-
-        if (compressClass == null) {
-            throw new RuntimeException("CompressClass can't be null!");
-        }
-
-        return SingletonFactory.getInstance(compressClass);
+        return SingletonFactory.getInstance(CompressContext.class);
     }
+
 
     public Packet decode(ByteBuf byteBuf) {
 

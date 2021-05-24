@@ -1,6 +1,4 @@
-package com.csu.rpc.registry.impl;
-
-import com.csu.rpc.registry.AbstractLoadBalance;
+package com.csu.rpc.discovery.loadbalance;
 
 import java.util.List;
 import java.util.Random;

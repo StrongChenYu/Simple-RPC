@@ -1,7 +1,8 @@
 package com.csu.rpc;
 
-import com.csu.rpc.registry.ServerDiscovery;
-import com.csu.rpc.registry.impl.ZkServerDiscovery;
+import com.csu.rpc.discovery.DiscoveryContext;
+import com.csu.rpc.discovery.ServerDiscovery;
+import com.csu.rpc.discovery.ZkServerDiscovery;
 import com.csu.rpc.utils.SingletonFactory;
 import com.csu.rpc.utils.ZookeeperUtil;
 import org.junit.Test;
@@ -14,7 +15,7 @@ import java.util.List;
  */
 public class ZkDiscoveryTest {
 
-    private ServerDiscovery serverDiscovery = SingletonFactory.getInstance(ZkServerDiscovery.class);
+    private ServerDiscovery serverDiscovery = SingletonFactory.getInstance(DiscoveryContext.class);
     private ZookeeperUtil zkUtils = SingletonFactory.getInstance(ZookeeperUtil.class);
 
     @Test

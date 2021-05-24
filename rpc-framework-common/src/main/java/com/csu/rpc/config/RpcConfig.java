@@ -1,117 +1,118 @@
 package com.csu.rpc.config;
 
+import com.csu.rpc.bean.ClientConfigBean;
+import com.csu.rpc.bean.ConfigBean;
+import com.csu.rpc.bean.ServerConfigBean;
 import com.csu.rpc.constant.RpcConstants;
+import com.csu.rpc.discovery.DiscoveryContext;
+import com.csu.rpc.discovery.RedisServerDiscovery;
+import com.csu.rpc.discovery.ServerDiscovery;
+import com.csu.rpc.discovery.ZkServerDiscovery;
+import com.csu.rpc.discovery.loadbalance.LoadBalance;
+import com.csu.rpc.discovery.loadbalance.LoadBalanceContext;
+import com.csu.rpc.discovery.loadbalance.RandomLoadBalance;
+import com.csu.rpc.dto.compress.Compress;
+import com.csu.rpc.dto.compress.CompressContext;
+import com.csu.rpc.dto.compress.impl.GzipCompress;
+import com.csu.rpc.dto.serializer.Serializer;
+import com.csu.rpc.dto.serializer.SerializerContext;
+import com.csu.rpc.dto.serializer.impl.KryoSerializer;
+import com.csu.rpc.enums.CompressTypeEnum;
+import com.csu.rpc.enums.LoadBalanceTypeEnum;
+import com.csu.rpc.enums.RegistryTypeEnum;
+import com.csu.rpc.enums.SerializerTypeEnum;
+import com.csu.rpc.registry.ServiceRegistry;
+import com.csu.rpc.registry.impl.RedisRegistry;
+import com.csu.rpc.registry.impl.ZookeeperRegistry;
+import com.csu.rpc.utils.SingletonFactory;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 @Slf4j
 @Getter
-public class RpcConfig {
+public abstract class RpcConfig {
 
-    public final static RpcConfig RPC_CONFIG = new RpcConfig();
+    //这里感觉没有必要用并发map，因为没有put操作
+    static final Map<String, Class<? extends ServerDiscovery>> discoveryMap = new HashMap<>();
+    static final Map<String, Class<? extends LoadBalance>> loadBalanceMap = new HashMap<>();
+    static final Map<String, Class<? extends Compress>> compressMap = new HashMap<>();
+    static final Map<String, Class<? extends Serializer>> serializerMap = new HashMap<>();
+    static final Map<String, Class<? extends ServiceRegistry>> registryMap = new HashMap<>();
 
-    private CustomClientConfig clientConfig;
-    private CustomServerConfig serverConfig;
-    private final static String SERVER_PREFIX = "rpc.server";
-    private final static String CLIENT_PREFIX = "rpc.client";
+    static {
 
-    private RpcConfig() {
-        loadConfig();
+        //服务发现操作（客户端）
+        discoveryMap.put(RegistryTypeEnum.ZOOKEEPER.getName(), ZkServerDiscovery.class);
+        discoveryMap.put(RegistryTypeEnum.REDIS.getName(), RedisServerDiscovery.class);
+
+        //客户端选择服务算法
+        loadBalanceMap.put(LoadBalanceTypeEnum.RANDOM.getName(), RandomLoadBalance.class);
+
+        //压缩算法
+        compressMap.put(CompressTypeEnum.GZIP.getName(), GzipCompress.class);
+
+        //编码解编码
+        serializerMap.put(SerializerTypeEnum.KRYO.getName(), KryoSerializer.class);
+
+        //注册中心配置操作（服务端）
+        registryMap.put(RegistryTypeEnum.ZOOKEEPER.getName(), ZookeeperRegistry.class);
+        registryMap.put(RegistryTypeEnum.REDIS.getName(), RedisRegistry.class);
     }
 
-    private void loadConfig() {
+    public abstract ConfigBean getConfigBean();
 
-        clientConfig = new CustomClientConfig();
-        serverConfig = new CustomServerConfig();
+    /**
+     * 这里使用模板方法模式
+     */
+     void loadConfig() {
+
         Properties configProperties = new Properties();
 
         /**
-         * 加载默认配置和自定义的配置
+         * 1.
+         * 加载默认配置
          */
-        try {
-            defaultConfigRead(configProperties);
-            customConfigRead(configProperties);
-        } catch (IOException e) {
-            log.error("config file error!");
-            System.exit(0);
-            e.printStackTrace();
-        }
+        defaultConfigRead(configProperties);
 
 
         /**
+         * 2. 加载自定义配置
+         */
+        customConfigRead(configProperties);
+
+
+        /**
+         * 3.
          * 加载完毕之后将配置文件中的内容注入到
          * serverConfig
          * clientConfig
          * 两个配置文件中
          */
-        try {
-            configSet(configProperties);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            log.error("config file read complete but error occur in config class!");
-            System.exit(0);
-            e.printStackTrace();
-        }
+        configSet(configProperties);
 
-        if (!validateConfig()) {
-            log.error("config file format validate fail!");
-            System.exit(0);
-            throw new RuntimeException("config file read complete but error occur in config class!");
-        }
+        /**
+         * 4.
+         * 检测配置文件中的内容正确性
+         */
+        validateConfig();
+
+
+        /**
+         * 5.
+         * 根据将配置文件中的配置
+         * 生成相应的策略类
+         */
+        classConfig();
+
 
         log.info("load config success!");
-    }
-
-
-    private boolean validateConfig() {
-        /**
-         * 这个方法用来验证配置文件到底有没有出错
-         */
-        return true;
-    }
-
-    /**
-     * 将configProperties配置为到clientConfig和serverConfig里面
-     * @param configProperties
-     * @throws NoSuchFieldException
-     * @throws IllegalAccessException
-     */
-    private void configSet(Properties configProperties) throws NoSuchFieldException, IllegalAccessException {
-
-        for (Map.Entry<Object, Object> entry : configProperties.entrySet()) {
-            String key = (String) entry.getKey();
-            String value = (String) entry.getValue();
-            String fieldName = key.split("\\.")[2];
-
-            if (key.startsWith(SERVER_PREFIX)) {
-                configObject(serverConfig, fieldName, value);
-            } else if (key.startsWith(CLIENT_PREFIX)) {
-                configObject(clientConfig, fieldName, value);
-            } else {
-                //其他的在这里处理
-            }
-        }
-    }
-
-    private void configObject(Object object, String fieldName, String value) throws IllegalAccessException, NoSuchFieldException {
-
-        Field declaredField = object.getClass().getDeclaredField(fieldName);
-        Class<?> type = declaredField.getType();
-
-        if (type == int.class || type == Integer.class) {
-            declaredField.set(object, Integer.valueOf(value));
-        } else if (type == String.class) {
-            declaredField.set(object, value);
-        } else {
-            //......目前预计就这两种情况
-            throw new RuntimeException("may be need more field config!");
-        }
     }
 
 
@@ -120,41 +121,109 @@ public class RpcConfig {
      * proper
      * @throws IOException
      */
-    private void customConfigRead(Properties configProperties) throws IOException {
-        URL clientUrl = this.getClass().getClassLoader().getResource(RpcConstants.CLIENT_CONFIG);
-        URL serverUrl = this.getClass().getClassLoader().getResource(RpcConstants.SERVER_CONFIG);
+    protected abstract void customConfigRead(Properties configProperties);
 
+    /**
+     * 将configProperties配置为到clientConfig和serverConfig里面
+     * @param configProperties
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    protected abstract void configSet(Properties configProperties);
 
-        if (clientUrl != null) {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(clientUrl.getFile()));
-            configProperties.load(bufferedReader);
+    void configObject(Object object, String fieldName, String value){
+        Field declaredField = null;
+        try {
+            declaredField = object.getClass().getDeclaredField(fieldName);
+
+            Class<?> type = declaredField.getType();
+
+            if (type == int.class || type == Integer.class) {
+                declaredField.set(object, Integer.valueOf(value));
+            } else if (type == String.class) {
+                declaredField.set(object, value);
+            } else {
+                //......目前预计就这两种情况
+                throw new RuntimeException("may be need more field config!");
+            }
+
+        } catch (Exception e) {
+            /**
+             * 这里的异常不做处理
+             */
+            log.warn("some error occur in config set to object!");
         }
+    }
 
-        if (serverUrl != null) {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(serverUrl.getFile()));
-            configProperties.load(bufferedReader);
-        }
 
+    /**
+     * 验证config是否正确
+     * @return
+     */
+    protected abstract void validateConfig();
+
+
+    protected abstract void classConfig();
+
+
+    /**
+     * 公共的配置
+     *
+     */
+    void classConfigCommon(ConfigBean configBean) {
+        classConfigCodecMode(configBean);
+        classConfigCompressMode(configBean);
+    }
+
+    /**
+     * 解压缩压缩配置
+     * @param configBean
+     */
+    private void classConfigCompressMode(ConfigBean configBean) {
+        String compressMode = configBean.getCompressMode();
+        Compress compress = SingletonFactory.getInstance(compressMap.get(compressMode));
+        SingletonFactory.getInstance(CompressContext.class).setCompress(compress);
+    }
+
+    /**
+     * 编码解码方式配置
+     * @param configBean
+     */
+    private void classConfigCodecMode(ConfigBean configBean) {
+        String codecMode = configBean.getCodecMode();
+        Serializer serializer = SingletonFactory.getInstance(serializerMap.get(codecMode));
+        SingletonFactory.getInstance(SerializerContext.class).setSerializer(serializer);
     }
 
     /**
      * 读取默认的配置文件
      * @throws IOException
      */
-    private void defaultConfigRead(Properties configProperties) throws IOException {
+    private void defaultConfigRead(Properties configProperties) {
         URL defaultConfig = this.getClass().getClassLoader().getResource(RpcConstants.DEFAULT_CONFIG);
 
         if (defaultConfig == null) {
-            log.error("default config file miss!");
-            System.exit(0);
+            exit("default config file miss!");
         }
 
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(defaultConfig.getFile()));
-        configProperties.load(bufferedReader);
-
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(defaultConfig.getFile()));
+            configProperties.load(bufferedReader);
+        } catch (IOException e) {
+            exit("config file error!", e);
+        }
     }
 
+    void exit(String error) {
+        log.error(error);
+        System.exit(0);
+    }
 
+    void exit(String error, Exception e) {
+        log.error(error);
+        System.exit(0);
+        e.printStackTrace();
+    }
 
 
     public static void main(String[] args) throws IOException, NoSuchFieldException {
@@ -176,9 +245,9 @@ public class RpcConfig {
 //            System.out.println(entry.getValue().getClass());
 //        }
 
-        RpcConfig config = new RpcConfig();
-        System.out.println(config.getClientConfig());
-        System.out.println(config.getServerConfig());
+//        RpcConfig config = new RpcConfig();
+//        System.out.println(config.getClientConfig());
+//        System.out.println(config.getServerConfig());
 
 //        Object cast = type.cast("123");
 //        System.out.println(cast);

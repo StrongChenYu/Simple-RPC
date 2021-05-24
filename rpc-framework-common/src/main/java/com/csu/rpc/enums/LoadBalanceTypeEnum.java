@@ -1,9 +1,7 @@
 package com.csu.rpc.enums;
 
-import com.csu.rpc.dto.compress.Compress;
-import com.csu.rpc.dto.compress.impl.GzipCompress;
-import com.csu.rpc.registry.LoadBalance;
-import com.csu.rpc.registry.impl.RandomLoadBalance;
+import com.csu.rpc.discovery.loadbalance.LoadBalance;
+import com.csu.rpc.discovery.loadbalance.RandomLoadBalance;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

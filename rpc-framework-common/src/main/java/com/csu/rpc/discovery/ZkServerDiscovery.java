@@ -1,10 +1,12 @@
-package com.csu.rpc.registry.impl;
+package com.csu.rpc.discovery;
 
 import com.csu.rpc.bean.RpcServiceInfo;
+import com.csu.rpc.config.ClientRpcConfig;
+import com.csu.rpc.config.ServerRpcConfig;
 import com.csu.rpc.constant.RpcConstants;
+import com.csu.rpc.discovery.loadbalance.LoadBalance;
+import com.csu.rpc.discovery.loadbalance.LoadBalanceContext;
 import com.csu.rpc.enums.LoadBalanceTypeEnum;
-import com.csu.rpc.registry.LoadBalance;
-import com.csu.rpc.registry.ServerDiscovery;
 import com.csu.rpc.config.RpcConfig;
 import com.csu.rpc.utils.SingletonFactory;
 import com.csu.rpc.utils.ZookeeperUtil;
@@ -20,14 +22,13 @@ import java.util.List;
 @Slf4j
 public class ZkServerDiscovery implements ServerDiscovery {
 
-    private final LoadBalanceTypeEnum loadBalanceType = LoadBalanceTypeEnum.RANDOM;
     private final ZookeeperUtil zkUtils = SingletonFactory.getInstance(ZookeeperUtil.class);
     private static final String SERVICE_PREFIX = RpcConstants.SERVICE_PREFIX;
-    private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
-    private LoadBalance getLoadBalance() {
-        return SingletonFactory.getInstance(loadBalanceType.getClazz());
-    }
+    private final ClientRpcConfig rpcConfig = SingletonFactory.getInstance(ClientRpcConfig.class);
 
+    private LoadBalance getLoadBalance() {
+        return SingletonFactory.getInstance(LoadBalanceContext.class);
+    }
 
     @Override
     public InetSocketAddress lookupServer(RpcServiceInfo serviceInfo) {
@@ -35,7 +36,7 @@ public class ZkServerDiscovery implements ServerDiscovery {
         /**
          * 获取拥有该服务的所有服务器
          */
-        String zookeeperAddress = rpcConfig.getClientConfig().getZookeeperAddress();
+        String zookeeperAddress = rpcConfig.getConfigBean().getZookeeperAddress();
         List<String> children = zkUtils.getChildren(zookeeperAddress, SERVICE_PREFIX + serviceInfo.toRegisterRpcServiceName());
 
         if (children == null || children.size() == 0) {

@@ -1,7 +1,6 @@
 package com.csu.rpc;
 
 import com.csu.rpc.annotation.RpcScan;
-import com.csu.rpc.config.CustomClientConfig;
 import com.csu.rpc.controller.HelloController;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

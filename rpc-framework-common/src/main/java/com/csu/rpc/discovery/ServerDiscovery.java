@@ -1,7 +1,6 @@
-package com.csu.rpc.registry;
+package com.csu.rpc.discovery;
 
 import com.csu.rpc.bean.RpcServiceInfo;
-import com.csu.rpc.registry.impl.ZkServerDiscovery;
 
 import java.net.InetSocketAddress;
 

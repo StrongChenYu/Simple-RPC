@@ -1,5 +1,6 @@
 package com.csu.rpc.registry.impl;
 
+import com.csu.rpc.config.ServerRpcConfig;
 import com.csu.rpc.constant.RpcConstants;
 import com.csu.rpc.config.RpcConfig;
 import com.csu.rpc.utils.ZookeeperUtil;
@@ -19,7 +20,7 @@ public class ZookeeperRegistry implements ServiceRegistry {
 
     private static final String PREFIX = RpcConstants.SERVICE_PREFIX;
 
-    private final RpcConfig rpcConfig = RpcConfig.RPC_CONFIG;
+    private final RpcConfig rpcConfig = SingletonFactory.getInstance(ServerRpcConfig.class);
 
     @Override
     public void registerService(String rpcServiceName, InetSocketAddress inetSocketAddress) {
@@ -36,7 +37,7 @@ public class ZookeeperRegistry implements ServiceRegistry {
          * 如果存在就在原有的内容后面加一个节点
          */
         String register = PREFIX + rpcServiceName + inetSocketAddress.toString();
-        zkUtil.createPersistentNode(rpcConfig.getServerConfig().getZookeeperAddress(), register, null);
+        zkUtil.createPersistentNode(rpcConfig.getConfigBean().getZookeeperAddress(), register, null);
     }
 
     @Override
@@ -48,6 +49,6 @@ public class ZookeeperRegistry implements ServiceRegistry {
          * 如果存在就删除掉
          */
         String register = PREFIX + rpcServiceName + inetSocketAddress.toString();
-        zkUtil.deleteNode(rpcConfig.getServerConfig().getZookeeperAddress(), register);
+        zkUtil.deleteNode(rpcConfig.getConfigBean().getZookeeperAddress(), register);
     }
 }

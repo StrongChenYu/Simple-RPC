@@ -7,7 +7,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import java.util.concurrent.CountDownLatch;
 
-public class MultiThreadTest {
+public class ClientTest {
 
     private static final Integer numThread = 2000;
 
@@ -30,5 +30,12 @@ public class MultiThreadTest {
         }
 
         countDownLatch.await();
+    }
+
+    @Test
+    public void testSingleThread() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientMain.class);
+        HelloController controller = context.getBean(HelloController.class);
+        Assert.assertEquals(1, controller.test());
     }
 }
