@@ -13,7 +13,14 @@ import com.csu.rpc.utils.SingletonFactory;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 
-
+/**
+ * 这里要get到到底是客户端的配置还是服务端的配置
+ * 想到的一个解决方案只能是
+ * 把SingleFactory中的每一个bean都拿出来试一试
+ * 然后找到继承了RpcConfig中的bean
+ * 看是RpcClientConfig还是RpcServerConfig
+ *
+ */
 @AllArgsConstructor
 public class PacketCodeC {
 
