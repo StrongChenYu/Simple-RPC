@@ -109,6 +109,7 @@ public class PacketCodeC {
         //返回的时候，不需要请求的ID,所以随便赋值一个
         byteBuf.writeInt(1);
         byteBuf.writeBytes(compressBytes);
+
     }
 
 }
