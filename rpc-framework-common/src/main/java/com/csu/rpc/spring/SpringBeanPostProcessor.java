@@ -5,6 +5,8 @@ import com.csu.rpc.annotation.RpcService;
 import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.proxy.RpcClientProxy;
 import com.csu.rpc.server.process.ServerProvider;
+import com.csu.rpc.server.process.processImpl.ServerProviderImpl;
+import com.csu.rpc.utils.SingletonFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -19,16 +21,15 @@ import java.lang.reflect.Field;
 @Component
 public class SpringBeanPostProcessor implements BeanPostProcessor {
 
-    ServerProvider serverProvider = ServerProvider.INSTANCE;
-
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-
         /**
          * 处理服务
          * 自动将服务注册到服务器里面
          */
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
+
+            ServerProvider serverProvider = SingletonFactory.getInstance(ServerProviderImpl.class);
 
             RpcService serviceAnnotation = bean.getClass().getAnnotation(RpcService.class);
             String group = serviceAnnotation.group();

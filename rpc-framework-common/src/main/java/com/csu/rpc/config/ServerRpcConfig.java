@@ -23,6 +23,7 @@ public class ServerRpcConfig extends RpcConfig {
 
     public ServerRpcConfig() {
         loadConfig();
+        RpcConfig.setRpcConfig(this);
     }
 
     @Override
@@ -31,28 +32,8 @@ public class ServerRpcConfig extends RpcConfig {
     }
 
     @Override
-    protected void customConfigRead(Properties configProperties) {
-        URL serverUrl = this.getClass().getClassLoader().getResource(RpcConstants.SERVER_CONFIG);
-
-        try {
-            if (serverUrl != null) {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(serverUrl.getFile()));
-                configProperties.load(bufferedReader);
-            }
-        } catch (Exception e) {
-            exit("custom config fill error!");
-        }
-    }
-
-    @Override
-    protected void configSet(Properties configProperties) {
-        for (Map.Entry<Object, Object> entry : configProperties.entrySet()) {
-            String key = (String) entry.getKey();
-            String value = (String) entry.getValue();
-            String fieldName = key.split("\\.")[2];
-
-            configObject(serverConfigBean, fieldName, value);
-        }
+    public String getConfigFileName() {
+        return RpcConstants.SERVER_CONFIG;
     }
 
     @Override
@@ -61,15 +42,10 @@ public class ServerRpcConfig extends RpcConfig {
     }
 
     @Override
-    protected void classConfig() {
-
-        /**
-         * 服务端配置注册中心
-         */
+    protected void classConfigCustom(ConfigBean configBean) {
         String registryAlgorithm = serverConfigBean.getRegisterCentral();
         ServiceRegistry serviceRegistry = SingletonFactory.getInstance(registryMap.get(registryAlgorithm));
         SingletonFactory.getInstance(RegistryContext.class).setServiceRegistry(serviceRegistry);
-
-        classConfigCommon(serverConfigBean);
     }
+
 }

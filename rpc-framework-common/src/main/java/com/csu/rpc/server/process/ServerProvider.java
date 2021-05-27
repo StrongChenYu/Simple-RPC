@@ -10,7 +10,6 @@ import com.csu.rpc.utils.SingletonFactory;
  */
 public interface ServerProvider {
 
-    ServerProvider INSTANCE = SingletonFactory.getInstance(ServerProviderImpl.class);
 
     void publishServer(Object service, RpcServiceInfo serviceInfo);
 

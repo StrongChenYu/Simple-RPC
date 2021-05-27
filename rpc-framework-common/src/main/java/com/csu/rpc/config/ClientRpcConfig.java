@@ -24,55 +24,30 @@ public class ClientRpcConfig extends RpcConfig {
 
     public ClientRpcConfig() {
         loadConfig();
+        RpcConfig.setRpcConfig(this);
     }
 
-    @Override
     public ClientConfigBean getConfigBean() {
         return clientConfigBean;
     }
 
     @Override
-    protected void customConfigRead(Properties configProperties) {
-        URL clientUrl = this.getClass().getClassLoader().getResource(RpcConstants.CLIENT_CONFIG);
-
-        try {
-            if (clientUrl != null) {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(clientUrl.getFile()));
-                configProperties.load(bufferedReader);
-            }
-
-        } catch (Exception e) {
-            exit("custom config fill error!");
-        }
+    public String getConfigFileName() {
+        return RpcConstants.CLIENT_CONFIG;
     }
-
-    @Override
-    protected void configSet(Properties configProperties) {
-
-        for (Map.Entry<Object, Object> entry : configProperties.entrySet()) {
-            String key = (String) entry.getKey();
-            String value = (String) entry.getValue();
-            String fieldName = key.split("\\.")[2];
-
-            configObject(clientConfigBean, fieldName, value);
-        }
-    }
-
 
     @Override
     protected void validateConfig() {
 
     }
 
-    @Override
-    protected void classConfig() {
 
-        /**
-         * 客户端选择算法选择
-         */
-        String lookUpAlgorithm = clientConfigBean.getSelectAddressAlgorithm();
-        LoadBalance loadBalance = SingletonFactory.getInstance(loadBalanceMap.get(lookUpAlgorithm));
-        SingletonFactory.getInstance(LoadBalanceContext.class).setLoadBalance(loadBalance);
+    /**
+     * 这里看看将来能不能在封装的好一点
+     * @param configBean
+     */
+    @Override
+    protected void classConfigCustom(ConfigBean configBean) {
 
         /**
          * 客户端注册中心配置
@@ -81,6 +56,12 @@ public class ClientRpcConfig extends RpcConfig {
         ServerDiscovery serverDiscovery = SingletonFactory.getInstance(discoveryMap.get(registerCentral));
         SingletonFactory.getInstance(DiscoveryContext.class).setServerDiscovery(serverDiscovery);
 
-        classConfigCommon(clientConfigBean);
+        /**
+         * 客户端选择算法选择
+         */
+        String lookUpAlgorithm = clientConfigBean.getSelectAddressAlgorithm();
+        LoadBalance loadBalance = SingletonFactory.getInstance(loadBalanceMap.get(lookUpAlgorithm));
+        SingletonFactory.getInstance(LoadBalanceContext.class).setLoadBalance(loadBalance);
     }
+
 }

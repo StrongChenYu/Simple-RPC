@@ -6,9 +6,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-public class NettyKryoEncoder extends MessageToByteEncoder<Packet> {
+public class NettyEncoder extends MessageToByteEncoder<Packet> {
 
-    public final static NettyKryoEncoder INSTANCE = new NettyKryoEncoder();
+    public final static NettyEncoder INSTANCE = new NettyEncoder();
     private Byte version;
 
 //    public NettyKryoEncoder(Byte version) {

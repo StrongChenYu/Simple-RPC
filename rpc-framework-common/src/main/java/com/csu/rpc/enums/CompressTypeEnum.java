@@ -27,4 +27,14 @@ public enum CompressTypeEnum {
         }
         return null;
     }
+
+    public static CompressTypeEnum getCompressClassByName(String name) {
+        name = name.toLowerCase();
+        for (CompressTypeEnum typeEnum : CompressTypeEnum.values()) {
+            if (typeEnum.getName().equals(name)) {
+                return typeEnum;
+            }
+        }
+        return null;
+    }
 }

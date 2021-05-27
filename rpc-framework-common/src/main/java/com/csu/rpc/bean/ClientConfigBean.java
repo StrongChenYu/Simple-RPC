@@ -14,7 +14,7 @@ public class ClientConfigBean extends ConfigBean{
      * rpc.client.maxRetry
      * 3(default)
      */
-    Integer maxRetry;
+    public Integer maxRetry;
 
     /**
      * 客户端选择服务端的算法
@@ -22,7 +22,7 @@ public class ClientConfigBean extends ConfigBean{
      * 1.random(default)
      * 2....
      */
-    String selectAddressAlgorithm;
+    public String selectAddressAlgorithm;
 
 
     @Override

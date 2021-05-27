@@ -1,5 +1,6 @@
 package com.csu.rpc.dto;
 
+import com.csu.rpc.config.RpcConfig;
 import com.csu.rpc.dto.compress.Compress;
 import com.csu.rpc.dto.compress.CompressContext;
 import com.csu.rpc.dto.request.RpcRequest;
@@ -12,6 +13,7 @@ import com.csu.rpc.enums.SerializerTypeEnum;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 这里要get到到底是客户端的配置还是服务端的配置
@@ -22,25 +24,51 @@ import lombok.AllArgsConstructor;
  *
  */
 @AllArgsConstructor
+@Slf4j
 public class PacketCodeC {
 
-    public static PacketCodeC PACKETCODEC = new PacketCodeC();
-    private final SerializerTypeEnum serializerType = SerializerTypeEnum.KRYO;
-    private final CompressTypeEnum compressType = CompressTypeEnum.GZIP;
+    public static PacketCodeC PACKETCODEC = SingletonFactory.getInstance(PacketCodeC.class);
 
+    private final SerializerTypeEnum serializerType = getSerializerType();
+    private final CompressTypeEnum compressType = getCompressType();
 
     private Class<? extends Packet> getPacketType(Byte type) {
         return PacketTypeEnum.getPacketClassByCode(type);
     }
 
     private Serializer getSerializerAlgorithm(Byte type) {
+        //这里做个校验吧
+        if (!serializerType.getCode().equals(type)) {
+            log.info("code mode in config file is not equals with actual packet");
+            throw new RuntimeException("code mode in config file is not equals with actual packet");
+        }
+
         return SingletonFactory.getInstance(SerializerContext.class);
     }
 
     private Compress getCompressAlgorithm(Byte type) {
+        //这里做校验
+        if (!compressType.getCode().equals(type)) {
+            log.info("compress type in config file is not equals with actual packet");
+            throw new RuntimeException("compress type in config file is not equals with actual packet");
+        }
+
         return SingletonFactory.getInstance(CompressContext.class);
     }
 
+    //根据config中的内容获取序列化算法
+    private SerializerTypeEnum getSerializerType() {
+        RpcConfig rpcConfig = RpcConfig.getRpcConfig();
+        String codecMode = rpcConfig.getConfigBean().getCodecMode();
+        return SerializerTypeEnum.getSerializerClassByName(codecMode);
+    }
+
+    //根据config中的内容获取压缩解压缩算法
+    private CompressTypeEnum getCompressType() {
+        RpcConfig rpcConfig = RpcConfig.getRpcConfig();
+        String compressMode = rpcConfig.getConfigBean().getCompressMode();
+        return CompressTypeEnum.getCompressClassByName(compressMode);
+    }
 
     public Packet decode(ByteBuf byteBuf) {
 

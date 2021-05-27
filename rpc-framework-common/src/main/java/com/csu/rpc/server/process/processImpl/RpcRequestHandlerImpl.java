@@ -5,6 +5,7 @@ import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.server.process.RpcRequestHandler;
 import com.csu.rpc.server.process.ServerProvider;
+import com.csu.rpc.utils.SingletonFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import java.lang.reflect.Method;
 @Slf4j
 public class RpcRequestHandlerImpl implements RpcRequestHandler {
 
-    ServerProvider serverProvider = ServerProvider.INSTANCE;
+    ServerProvider serverProvider = SingletonFactory.getInstance(ServerProviderImpl.class);
 
     @Override
     public RpcResponse handleRpcRequest(RpcRequest request) {

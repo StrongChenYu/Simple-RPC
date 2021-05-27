@@ -3,15 +3,13 @@ package com.csu.rpc.client;
 import com.csu.rpc.bean.RpcServiceInfo;
 import com.csu.rpc.client.handler.NettyClientHandler;
 import com.csu.rpc.client.handler.UnProcessRequestsManager;
-import com.csu.rpc.coder.NettyKryoDecoder;
-import com.csu.rpc.coder.NettyKryoEncoder;
+import com.csu.rpc.coder.NettyDecoder;
+import com.csu.rpc.coder.NettyEncoder;
 import com.csu.rpc.config.ClientRpcConfig;
 import com.csu.rpc.discovery.DiscoveryContext;
 import com.csu.rpc.dto.request.RpcRequest;
 import com.csu.rpc.dto.response.RpcResponse;
 import com.csu.rpc.discovery.ServerDiscovery;
-import com.csu.rpc.config.RpcConfig;
-import com.csu.rpc.discovery.ZkServerDiscovery;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -45,9 +43,9 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new NettyKryoDecoder());
+                        ch.pipeline().addLast(new NettyDecoder());
                         ch.pipeline().addLast(new NettyClientHandler());
-                        ch.pipeline().addLast(new NettyKryoEncoder());
+                        ch.pipeline().addLast(new NettyEncoder());
                     }
                 });
 

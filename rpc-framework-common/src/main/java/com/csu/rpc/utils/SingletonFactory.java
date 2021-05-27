@@ -15,6 +15,11 @@ public class SingletonFactory {
 
     }
 
+    public static <T> boolean containsBean(Class<T> clazz) {
+        String key = clazz.toString();
+        return OBJECT_MAP.containsKey(key);
+    }
+
     public static <T> T getInstance(Class<T> clazz) {
         String key = clazz.toString();
         Object instance;

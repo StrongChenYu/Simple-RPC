@@ -10,6 +10,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.StandardAnnotationMetadata;
+import org.springframework.stereotype.Component;
 
 /**
  * @Author Chen Yu
@@ -45,12 +46,18 @@ public class RpcScannerRegister implements ImportBeanDefinitionRegistrar, Resour
          * 到这里，扫描的包就在basePacket中了
          * 之后就根据basePacket将所有的service扫描进去
          */
-        RpcServiceScanner scanner = new RpcServiceScanner(registry, RpcService.class);
+        RpcServiceScanner rpcServiceScanner = new RpcServiceScanner(registry, RpcService.class);
         if (resourceLoader != null) {
-            scanner.setResourceLoader(resourceLoader);
+            rpcServiceScanner.setResourceLoader(resourceLoader);
         }
 
-        int scan = scanner.scan(basePackages);
-        log.info("Total scan {} bean in project", scan);
+        int scanService = rpcServiceScanner.scan(basePackages);
+        log.info("Total scan {} bean in project", scanService);
+
+    }
+
+    public static void main(String[] args) {
+        Package aPackage = RpcServiceScanner.class.getPackage();
+        System.out.println(aPackage.getName());
     }
 }

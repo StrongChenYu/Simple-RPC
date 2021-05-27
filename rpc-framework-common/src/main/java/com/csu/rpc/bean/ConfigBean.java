@@ -13,21 +13,21 @@ public class ConfigBean {
      * 1.zookeeper(default)
      * 2.redis
      */
-    String registerCentral;
+    public String registerCentral;
 
     /**
      * zookeeper的地址
      * rpc.client.zookeeperAddress
      * 如果使用zookeeper必须配置
      */
-    String zookeeperAddress;
+    public String zookeeperAddress;
 
     /**
      * redis的地址
      * rpc.client.redisAddress
      * 如果使用redis必须配置
      */
-    String redisAddress;
+    public String redisAddress;
 
 
     /**
@@ -35,13 +35,13 @@ public class ConfigBean {
      * rpc.server.codeMode
      * 1.kryo(default)
      */
-    String codecMode;
+    public String codecMode;
 
     /**
      * 客户端的压缩解压缩方式
      * rpc.server.compressMode
      * 2. gzip (default)
      */
-    String compressMode;
+    public String compressMode;
 
 }

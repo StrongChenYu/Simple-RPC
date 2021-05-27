@@ -17,22 +17,11 @@ public class ClientMain {
 
     public static void main(String[] args) throws NoSuchFieldException, InterruptedException {
 
-        Thread[] threads = new Thread[numThread];
-        CountDownLatch countDownLatch = new CountDownLatch(numThread);
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ClientMain.class);
 
-        for (int i = 0; i < numThread; i++) {
-            threads[i] = new Thread(() -> {
-                HelloController controller = context.getBean(HelloController.class);
-                controller.test();
-                countDownLatch.countDown();
-            });
-        }
+        HelloController controller = context.getBean(HelloController.class);
+        controller.test();
 
-        for (int i = 0; i < numThread; i++) {
-            threads[i].start();
-        }
 
-        countDownLatch.await();
     }
 }

@@ -1,11 +1,9 @@
 package com.csu.rpc.server;
 
-import com.csu.rpc.bean.ConfigBean;
-import com.csu.rpc.coder.NettyKryoDecoder;
-import com.csu.rpc.coder.NettyKryoEncoder;
+import com.csu.rpc.coder.NettyDecoder;
+import com.csu.rpc.coder.NettyEncoder;
 import com.csu.rpc.config.ServerRpcConfig;
 import com.csu.rpc.server.handler.RpcRequestPacketHandler;
-import com.csu.rpc.config.RpcConfig;
 import com.csu.rpc.utils.SingletonFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -41,9 +39,9 @@ public class NettyServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new NettyKryoDecoder());
+                        ch.pipeline().addLast(new NettyDecoder());
                         ch.pipeline().addLast(new RpcRequestPacketHandler());
-                        ch.pipeline().addLast(new NettyKryoEncoder());
+                        ch.pipeline().addLast(new NettyEncoder());
                     }
                 });
     }

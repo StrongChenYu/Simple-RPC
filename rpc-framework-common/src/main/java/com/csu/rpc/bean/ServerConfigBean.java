@@ -15,14 +15,14 @@ public class ServerConfigBean extends ConfigBean{
      * rpc.server.ip
      * default: 127.0.0.1
      */
-    String ip;
+    public String ip;
 
     /**
      * 服务器端口号
      * rpc.server.port
      * default:8000
      */
-    Integer port;
+    public Integer port;
 
 
     public String getZookeeperIP() {

@@ -27,4 +27,14 @@ public enum SerializerTypeEnum {
         }
         return null;
     }
+
+    public static SerializerTypeEnum getSerializerClassByName(String name) {
+        name = name.toLowerCase();
+        for (SerializerTypeEnum typeEnum : SerializerTypeEnum.values()) {
+            if (typeEnum.getName().equals(name)) {
+                return typeEnum;
+            }
+        }
+        return null;
+    }
 }

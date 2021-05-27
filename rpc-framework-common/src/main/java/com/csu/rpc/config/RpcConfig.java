@@ -46,6 +46,29 @@ public abstract class RpcConfig {
     static final Map<String, Class<? extends Serializer>> serializerMap = new HashMap<>();
     static final Map<String, Class<? extends ServiceRegistry>> registryMap = new HashMap<>();
 
+    /**
+     * 这里保存一份实例
+     * 因为SingleFactory get不出
+     * 到底是客户端还是服务端的实例
+     */
+    private static RpcConfig rpcConfig = null;
+
+    /**
+     * 这里用来记录到底是哪个客户端的配置
+     */
+    public static RpcConfig getRpcConfig() {
+        if (rpcConfig != null) {
+            return rpcConfig;
+        }
+        throw new RuntimeException("config class should not be null!");
+    }
+
+
+    public static void setRpcConfig(RpcConfig rpcConfig) {
+        RpcConfig.rpcConfig = rpcConfig;
+    }
+
+
     static {
 
         //服务发现操作（客户端）
@@ -76,16 +99,10 @@ public abstract class RpcConfig {
         Properties configProperties = new Properties();
 
         /**
-         * 1.
-         * 加载默认配置
-         */
-        defaultConfigRead(configProperties);
-
-
-        /**
+         * 1. 加载默认配置
          * 2. 加载自定义配置
          */
-        customConfigRead(configProperties);
+        configRead(configProperties);
 
 
         /**
@@ -108,20 +125,46 @@ public abstract class RpcConfig {
          * 5.
          * 根据将配置文件中的配置
          * 生成相应的策略类
+         * 这里这样调用会出事
          */
-        classConfig();
+        //classConfig();
 
 
         log.info("load config success!");
     }
 
 
+    public void afterConfigInit() {
+         classConfig();
+    }
+
+
+    private void configRead(Properties properties) {
+        defaultConfigRead(properties);
+        customConfigRead(properties);
+    }
+
     /**
      * 读取自定义配置文件
      * proper
      * @throws IOException
      */
-    protected abstract void customConfigRead(Properties configProperties);
+    private void customConfigRead(Properties configProperties) {
+        String fileName = getConfigFileName();
+        URL clientUrl = this.getClass().getClassLoader().getResource(fileName);
+
+        try {
+            if (clientUrl != null) {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(clientUrl.getFile()));
+                configProperties.load(bufferedReader);
+            }
+
+        } catch (Exception e) {
+            exit("custom config fill error!");
+        }
+    }
+
+    public abstract String getConfigFileName();
 
     /**
      * 将configProperties配置为到clientConfig和serverConfig里面
@@ -129,12 +172,22 @@ public abstract class RpcConfig {
      * @throws NoSuchFieldException
      * @throws IllegalAccessException
      */
-    protected abstract void configSet(Properties configProperties);
+    private void configSet(Properties configProperties) {
+        for (Map.Entry<Object, Object> entry : configProperties.entrySet()) {
+            String key = (String) entry.getKey();
+            String value = (String) entry.getValue();
+            String fieldName = key.split("\\.")[2];
+
+            ConfigBean configBean = getConfigBean();
+            configObject(configBean, fieldName, value);
+        }
+    }
+
 
     void configObject(Object object, String fieldName, String value){
         Field declaredField = null;
         try {
-            declaredField = object.getClass().getDeclaredField(fieldName);
+            declaredField = object.getClass().getField(fieldName);
 
             Class<?> type = declaredField.getType();
 
@@ -163,7 +216,13 @@ public abstract class RpcConfig {
     protected abstract void validateConfig();
 
 
-    protected abstract void classConfig();
+    private void classConfig() {
+        ConfigBean configBean = getConfigBean();
+        classConfigCommon(configBean);
+        classConfigCustom(configBean);
+    }
+
+    protected abstract void classConfigCustom(ConfigBean configBean);
 
 
     /**
@@ -226,7 +285,12 @@ public abstract class RpcConfig {
     }
 
 
-    public static void main(String[] args) throws IOException, NoSuchFieldException {
+    public static void main(String[] args) throws IOException, NoSuchFieldException, IllegalAccessException {
+
+        ConfigBean serverConfigBean = new ServerConfigBean();
+        Field declaredFields = serverConfigBean.getClass().getField("zookeeperAddress");
+        declaredFields.set(serverConfigBean,"123");
+        System.out.println(serverConfigBean);
 //
 //        Properties properties = new Properties();
 //
