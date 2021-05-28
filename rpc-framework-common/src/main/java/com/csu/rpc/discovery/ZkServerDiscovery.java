@@ -24,7 +24,6 @@ public class ZkServerDiscovery implements ServerDiscovery {
 
     private final ZookeeperUtil zkUtils = SingletonFactory.getInstance(ZookeeperUtil.class);
     private static final String SERVICE_PREFIX = RpcConstants.SERVICE_PREFIX;
-    private final ClientRpcConfig rpcConfig = SingletonFactory.getInstance(ClientRpcConfig.class);
 
     private LoadBalance getLoadBalance() {
         return SingletonFactory.getInstance(LoadBalanceContext.class);
@@ -32,6 +31,7 @@ public class ZkServerDiscovery implements ServerDiscovery {
 
     @Override
     public InetSocketAddress lookupServer(RpcServiceInfo serviceInfo) {
+        ClientRpcConfig rpcConfig = SingletonFactory.getInstance(ClientRpcConfig.class);
 
         /**
          * 获取拥有该服务的所有服务器

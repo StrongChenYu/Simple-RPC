@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class NettyClient {
     private final Bootstrap bootstrap;
-    private final ServerDiscovery serverDiscovery;
     private final UnProcessRequestsManager unProcessRequestsManager;
     private final EventLoopGroup eventLoopGroup;
     private final ChannelProvider channelProvider;
@@ -50,7 +49,6 @@ public class NettyClient {
                 });
 
         unProcessRequestsManager = SingletonFactory.getInstance(UnProcessRequestsManager.class);
-        serverDiscovery = SingletonFactory.getInstance(DiscoveryContext.class);
         channelProvider = SingletonFactory.getInstance(ChannelProvider.class);
     }
 
@@ -85,7 +83,7 @@ public class NettyClient {
     public RpcResponse sendMessage(RpcRequest rpcRequest) {
         CompletableFuture<RpcResponse> responseFuture = new CompletableFuture<>();
         RpcServiceInfo serviceInfo = getRpcServiceInfo(rpcRequest);
-
+        ServerDiscovery serverDiscovery = SingletonFactory.getInstance(DiscoveryContext.class);
         //这里要将rpcRequest中的group和version提取出来，然后再去搜索
         InetSocketAddress address = serverDiscovery.lookupServer(serviceInfo);
 

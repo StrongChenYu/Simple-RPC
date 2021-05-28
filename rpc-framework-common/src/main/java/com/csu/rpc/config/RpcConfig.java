@@ -127,7 +127,7 @@ public abstract class RpcConfig {
          * 生成相应的策略类
          * 这里这样调用会出事
          */
-        //classConfig();
+        classConfig();
 
 
         log.info("load config success!");

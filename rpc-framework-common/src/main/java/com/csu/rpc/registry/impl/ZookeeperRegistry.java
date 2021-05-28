@@ -20,10 +20,11 @@ public class ZookeeperRegistry implements ServiceRegistry {
 
     private static final String PREFIX = RpcConstants.SERVICE_PREFIX;
 
-    private final RpcConfig rpcConfig = SingletonFactory.getInstance(ServerRpcConfig.class);
 
     @Override
     public void registerService(String rpcServiceName, InetSocketAddress inetSocketAddress) {
+        RpcConfig rpcConfig = SingletonFactory.getInstance(ServerRpcConfig.class);
+
         ZookeeperUtil zkUtil = SingletonFactory.getInstance(ZookeeperUtil.class);
 
         /**
@@ -43,6 +44,7 @@ public class ZookeeperRegistry implements ServiceRegistry {
     @Override
     public void unRegisterService(String rpcServiceName, InetSocketAddress inetSocketAddress) {
         ZookeeperUtil zkUtil = SingletonFactory.getInstance(ZookeeperUtil.class);
+        RpcConfig rpcConfig = SingletonFactory.getInstance(ServerRpcConfig.class);
 
         /**
          * 删除节点，如果不存在就不用删除

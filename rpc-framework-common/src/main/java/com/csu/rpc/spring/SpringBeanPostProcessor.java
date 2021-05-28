@@ -3,6 +3,7 @@ package com.csu.rpc.spring;
 import com.csu.rpc.annotation.RpcReference;
 import com.csu.rpc.annotation.RpcService;
 import com.csu.rpc.bean.RpcServiceInfo;
+import com.csu.rpc.config.ServerRpcConfig;
 import com.csu.rpc.proxy.RpcClientProxy;
 import com.csu.rpc.server.process.ServerProvider;
 import com.csu.rpc.server.process.processImpl.ServerProviderImpl;
@@ -21,6 +22,8 @@ import java.lang.reflect.Field;
 @Component
 public class SpringBeanPostProcessor implements BeanPostProcessor {
 
+    private volatile boolean serverConfigInit = true;
+
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         /**
@@ -28,6 +31,10 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
          * 自动将服务注册到服务器里面
          */
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
+
+            if (serverConfigInit) {
+                initServerConfig();
+            }
 
             ServerProvider serverProvider = SingletonFactory.getInstance(ServerProviderImpl.class);
 
@@ -41,6 +48,15 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
             serverProvider.publishServer(bean, serviceInfo);
         }
         return bean;
+    }
+
+    /**
+     * 一点小瑕疵
+     * 智能先这样处理了
+     */
+    private void initServerConfig() {
+        SingletonFactory.getInstance(ServerRpcConfig.class);
+        serverConfigInit = false;
     }
 
     @Override

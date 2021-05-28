@@ -13,7 +13,7 @@ import lombok.Getter;
 @Getter
 public enum LoadBalanceTypeEnum {
 
-    RANDOM((byte)1, "randomBalance", RandomLoadBalance.class);
+    RANDOM((byte)1, "random", RandomLoadBalance.class);
 
     private Byte code;
     private String name;
