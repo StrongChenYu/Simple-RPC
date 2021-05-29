@@ -2,6 +2,7 @@ package com.csu.rpc.server;
 
 import com.csu.rpc.coder.NettyDecoder;
 import com.csu.rpc.coder.NettyEncoder;
+import com.csu.rpc.coder.Spliter;
 import com.csu.rpc.config.ServerRpcConfig;
 import com.csu.rpc.server.handler.RpcRequestPacketHandler;
 import com.csu.rpc.utils.SingletonFactory;
@@ -39,6 +40,7 @@ public class NettyServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new NettyDecoder());
                         ch.pipeline().addLast(new RpcRequestPacketHandler());
                         ch.pipeline().addLast(new NettyEncoder());

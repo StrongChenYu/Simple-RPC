@@ -8,6 +8,7 @@ import com.csu.rpc.discovery.DiscoveryContext;
 import com.csu.rpc.discovery.RedisServerDiscovery;
 import com.csu.rpc.discovery.ServerDiscovery;
 import com.csu.rpc.discovery.ZkServerDiscovery;
+import com.csu.rpc.discovery.loadbalance.ConsistentHashBalance;
 import com.csu.rpc.discovery.loadbalance.LoadBalance;
 import com.csu.rpc.discovery.loadbalance.LoadBalanceContext;
 import com.csu.rpc.discovery.loadbalance.RandomLoadBalance;
@@ -77,6 +78,7 @@ public abstract class RpcConfig {
 
         //客户端选择服务算法
         loadBalanceMap.put(LoadBalanceTypeEnum.RANDOM.getName(), RandomLoadBalance.class);
+        loadBalanceMap.put(LoadBalanceTypeEnum.CONSISTENT_HASH.getName(), ConsistentHashBalance.class);
 
         //压缩算法
         compressMap.put(CompressTypeEnum.GZIP.getName(), GzipCompress.class);

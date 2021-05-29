@@ -1,6 +1,5 @@
 package com.csu.rpc.annotation;
 
-import com.csu.rpc.spring.ConfigClassLoad;
 import com.csu.rpc.spring.RpcScannerRegister;
 import org.springframework.context.annotation.Import;
 
@@ -12,7 +11,7 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import({RpcScannerRegister.class, ConfigClassLoad.class})
+@Import(RpcScannerRegister.class)
 @Documented
 public @interface RpcScan {
 

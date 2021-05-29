@@ -79,9 +79,6 @@ public class PacketCodeC {
         //读取版本
         byteBuf.readByte();
 
-        //数据包的长度
-        int length = byteBuf.readInt();
-
         //数据包的类型
         Byte packetType = byteBuf.readByte();
 
@@ -93,6 +90,9 @@ public class PacketCodeC {
 
         //requestId,这个暂时还不知道有什么用
         byteBuf.readInt();
+
+        //读取数据包的长度
+        int length = byteBuf.readInt();
 
         //读取对象的主体
         byte[] body = new byte[length];
@@ -129,13 +129,13 @@ public class PacketCodeC {
 
         byteBuf.writeBytes(RpcConstants.MAGIC_NUMBER);
         byteBuf.writeByte(RpcConstants.DEFAULT_VERSION);
-        byteBuf.writeInt(compressBytes.length);
         byteBuf.writeByte(packet.serializerType());
         byteBuf.writeByte(compressType.getCode());
         byteBuf.writeByte(serializerType.getCode());
 
         //返回的时候，不需要请求的ID,所以随便赋值一个
         byteBuf.writeInt(1);
+        byteBuf.writeInt(compressBytes.length);
         byteBuf.writeBytes(compressBytes);
 
     }

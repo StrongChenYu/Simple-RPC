@@ -5,6 +5,7 @@ import com.csu.rpc.client.handler.NettyClientHandler;
 import com.csu.rpc.client.handler.UnProcessRequestsManager;
 import com.csu.rpc.coder.NettyDecoder;
 import com.csu.rpc.coder.NettyEncoder;
+import com.csu.rpc.coder.Spliter;
 import com.csu.rpc.config.ClientRpcConfig;
 import com.csu.rpc.discovery.DiscoveryContext;
 import com.csu.rpc.dto.request.RpcRequest;
@@ -42,6 +43,7 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new NettyDecoder());
                         ch.pipeline().addLast(new NettyClientHandler());
                         ch.pipeline().addLast(new NettyEncoder());
